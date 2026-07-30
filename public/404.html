@@ -6,14 +6,10 @@
   <title>ButterJack | 代码与旋律</title>
   <script>
     sessionStorage.redirect = location.href
+    const base = '/blog'
+    const path = location.pathname.replace(base, '') || '/'
+    window.location.replace(base + '/#' + path)
   </script>
-  <meta http-equiv="refresh" content="0;URL='/'">
 </head>
-<body>
-  <script>
-    if (sessionStorage.redirect) {
-      window.location.href = '/'
-    }
-  </script>
-</body>
+<body></body>
 </html>
