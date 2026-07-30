@@ -32,6 +32,27 @@ body{font-family:system-ui,-apple-system,sans-serif;background:linear-gradient(1
 .hero h2{font-size:2.5rem;font-weight:800;line-height:1.3;margin-bottom:16px;color:#1f2937}
 .hero .ti{color:#6366f1}.hero .tr{color:#f43f5e}
 .hero p{color:#6b7280;font-size:1rem;max-width:500px;line-height:1.6;margin-bottom:32px}
+/* Resume */
+.resume{display:flex;gap:28px;align-items:flex-start;padding:36px;margin-bottom:40px;background:rgba(255,255,255,0.75);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.5);border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,0.06),0 2px 8px rgba(0,0,0,0.04);transition:.3s}
+.resume:hover{box-shadow:0 16px 48px rgba(0,0,0,0.1),0 4px 16px rgba(0,0,0,0.06);transform:translateY(-2px)}
+.resume-avatar{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#e0e7ff,#f3e8ff);display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;color:#6366f1;flex-shrink:0}
+.resume-body{flex:1;min-width:0}
+.resume-name{font-size:1.75rem;font-weight:700;color:#1f2937;margin-bottom:4px}
+.resume-edu{font-size:0.85rem;color:#6b7280;margin-bottom:16px;display:flex;align-items:center;gap:4px}
+.resume-skills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.pill{padding:4px 14px;border-radius:999px;font-size:0.8rem;font-weight:500;transition:.2s}
+.pill:hover{transform:translateY(-1px)}
+.pill-blue{background:rgba(99,102,241,0.12);color:#6366f1}
+.pill-blue:hover{background:rgba(99,102,241,0.2)}
+.pill-green{background:rgba(16,185,129,0.12);color:#10b981}
+.pill-green:hover{background:rgba(16,185,129,0.2)}
+.pill-yellow{background:rgba(245,158,11,0.12);color:#d97706}
+.pill-yellow:hover{background:rgba(245,158,11,0.2)}
+.resume-contact{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.resume-contact a{font-size:0.85rem;color:#6b7280;text-decoration:none;transition:.2s}
+.resume-contact a:hover{color:#6366f1}
+.resume-email{font-size:0.85rem;color:#6b7280;text-decoration:none}
+.resume-email:hover{color:#6366f1}
 .qc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;max-width:700px}
 .qc-grid .qc{padding:20px;cursor:pointer;text-decoration:none;color:inherit}
 .qc-grid .qc .qci{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;margin-bottom:12px;background:rgba(255,255,255,0.5)}
@@ -205,6 +226,8 @@ body{font-family:system-ui,-apple-system,sans-serif;background:linear-gradient(1
   .sidebar.open{transform:translateX(0)}
   .main{padding:16px 16px 80px}
   .hero h2{font-size:1.8rem}
+  .resume{flex-direction:column;align-items:center;text-align:center;padding:24px 16px}
+  .resume-contact{justify-content:center}
   .music-layout{flex-direction:column}
   .music-cover{width:100%}
   .music-lyrics{min-width:auto!important;height:250px}
@@ -257,9 +280,28 @@ body{font-family:system-ui,-apple-system,sans-serif;background:linear-gradient(1
   <main class="main" id="main">
     <!-- Home -->
     <div class="section active" id="page-home">
-      <div class="hero">
-        <h2>代码写逻辑，<br><span class="ti">旋律</span>写<span class="tr">情绪</span></h2>
-        <p>南京大学计算机系在读，一边写bug一边写歌。在这里记录技术成长、课程笔记，还有那些没说出口的情绪都藏在旋律里。</p>
+      <div class="resume">
+        <div class="resume-avatar">郑</div>
+        <div class="resume-body">
+          <h2 class="resume-name">郑高健</h2>
+          <div class="resume-edu">🎓 南京大学 · 计算机学院 · 2025级 · 计算机科学与技术</div>
+          <div class="resume-skills">
+            <span class="pill pill-blue">C/C++</span>
+            <span class="pill pill-blue">Python</span>
+            <span class="pill pill-blue">VibeCoding</span>
+            <span class="pill pill-green">唱歌</span>
+            <span class="pill pill-green">写歌</span>
+            <span class="pill pill-green">编曲制作</span>
+            <span class="pill pill-green">竹笛</span>
+            <span class="pill pill-yellow">管理协调能力</span>
+            <span class="pill pill-yellow">表达沟通能力</span>
+          </div>
+          <div class="resume-contact">
+            <a href="mailto:zhenggaojian123456@163.com" class="resume-email">✉️ zhenggaojian123456@163.com</a>
+            <a href="https://github.com/ButterJack07" target="_blank">🐙 GitHub</a>
+            <a href="https://space.bilibili.com/1453945101" target="_blank">📺 Bilibili</a>
+          </div>
+        </div>
       </div>
 
       <div class="latest">
