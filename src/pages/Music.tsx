@@ -1,22 +1,110 @@
 import { useState, useRef, useEffect } from 'react'
-import { FaPlay, FaPause, FaBackward, FaForward, FaVolumeLow, FaMusic, FaPlus, FaXmark, FaUpload, FaCheck } from 'react-icons/fa6'
+import { FaPlay, FaPause, FaBackward, FaForward, FaVolumeLow, FaMusic, FaPlus, FaXmark, FaUpload, FaCheck, FaSpinner } from 'react-icons/fa6'
 import { formatTime } from '../utils/lrcParser'
 import { usePlayer } from '../contexts/PlayerContext'
 import { useEditStore } from '../stores/editStore'
 import type { MusicTrack } from '../types'
 
-const demoTracks: MusicTrack[] = [
-  { id: '1', title: '渺小', artist: '黄油夹克', genre: '流行', year: '2026', audioUrl: '/music/黄油夹克 - 渺小.mp3', lrcUrl: '/music/黄油夹克 - 渺小.lrc', description: '「渺小的我，在偌大的世界里寻找自己的声音」' },
-]
-
 const GITHUB_API = 'https://api.github.com'
 const OWNER = 'ButterJack07'
 const REPO = 'blog'
+const BASE = import.meta.env.BASE_URL.replace(/\/$/, '')
+
+interface GitHubContentItem {
+  name: string
+  path: string
+  type: 'dir' | 'file'
+  download_url: string | null
+}
+
+function fileNameToTrack(name: string, folder: string): Partial<MusicTrack> | null {
+  if (!name.endsWith('.mp3') && !name.endsWith('.wav') && !name.endsWith('.ogg') && !name.endsWith('.flac')) return null
+  const clean = name.replace(/\.(mp3|wav|ogg|flac)$/, '')
+  const parts = clean.split(' - ')
+  return {
+    title: parts.length > 1 ? parts[1] : clean,
+    artist: parts.length > 1 ? parts[0] : '黄油夹克',
+    audioUrl: `${BASE}/music/${folder}/${name}`,
+    lrcUrl: `${BASE}/music/${folder}/${clean}.lrc`,
+  }
+}
+
+async function fetchDir(path: string, token?: string): Promise<GitHubContentItem[]> {
+  const headers: Record<string, string> = { Accept: 'application/vnd.github.v3+json' }
+  if (token) headers.Authorization = `token ${token}`
+  const res = await fetch(`${GITHUB_API}/repos/${OWNER}/${REPO}/contents/${path}`, { headers })
+  if (!res.ok) throw new Error('Failed to fetch directory')
+  return res.json()
+}
+
+async function fetchInfo(path: string, token?: string): Promise<MusicTrack | null> {
+  const headers: Record<string, string> = { Accept: 'application/vnd.github.v3+json' }
+  if (token) headers.Authorization = `token ${token}`
+  try {
+    const res = await fetch(`${GITHUB_API}/repos/${OWNER}/${REPO}/contents/${path}`, { headers })
+    if (!res.ok) return null
+    const data = await res.json()
+    const content = atob(data.content)
+    const info = JSON.parse(content)
+    return {
+      ...info,
+      audioUrl: `${BASE}${info.audioUrl}`,
+      lrcUrl: info.lrcUrl ? `${BASE}${info.lrcUrl}` : undefined,
+      coverUrl: info.coverUrl ? `${BASE}${info.coverUrl}` : undefined,
+    }
+  } catch {
+    return null
+  }
+}
+
+async function loadTracksFromRepo(token?: string): Promise<MusicTrack[]> {
+  const items = await fetchDir('music', token)
+  const results: MusicTrack[] = []
+
+  for (const item of items) {
+    if (item.type === 'dir') {
+      const info = await fetchInfo(`music/${item.name}/info.json`, token)
+      if (info) {
+        results.push(info)
+        continue
+      }
+      const files = await fetchDir(`music/${item.name}`, token)
+      for (const f of files) {
+        const partial = fileNameToTrack(f.name, item.name)
+        if (partial) {
+          const ts = Date.now() + results.length
+          results.push({
+            id: String(ts),
+            title: partial.title || item.name,
+            artist: partial.artist || '黄油夹克',
+            audioUrl: partial.audioUrl || `${BASE}/music/${item.name}/${f.name}`,
+            lrcUrl: partial.lrcUrl,
+          })
+          break
+        }
+      }
+    } else if (item.type === 'file' && item.name.endsWith('.mp3')) {
+      const partial = fileNameToTrack(item.name, '')
+      if (partial) {
+        results.push({
+          id: String(Date.now() + results.length),
+          title: partial.title || '未知',
+          artist: partial.artist || '黄油夹克',
+          audioUrl: `${BASE}/music/${item.name}`,
+          lrcUrl: `${BASE}/music/${item.name.replace(/\.mp3$/, '.lrc')}`,
+        })
+      }
+    }
+  }
+
+  return results
+}
 
 export default function Music() {
   const { isEditMode } = useEditStore()
   const player = usePlayer()
-  const [tracks, setTracks] = useState<MusicTrack[]>(demoTracks)
+  const [tracks, setTracks] = useState<MusicTrack[]>([])
+  const [loading, setLoading] = useState(true)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [showUpload, setShowUpload] = useState(false)
   const [uploading, setUploading] = useState(false)
@@ -24,6 +112,14 @@ export default function Music() {
   const [uploadError, setUploadError] = useState('')
 
   const lyricsRef = useRef<HTMLUListElement>(null)
+
+  useEffect(() => {
+    const token = localStorage.getItem('github_token') || undefined
+    loadTracksFromRepo(token).then((list) => {
+      if (list.length > 0) setTracks(list)
+      setLoading(false)
+    }).catch(() => setLoading(false))
+  }, [])
 
   const [form, setForm] = useState({
     title: '', artist: '黄油夹克', genre: '流行', year: String(new Date().getFullYear()),
@@ -103,9 +199,9 @@ export default function Music() {
 
       const newTrack: MusicTrack = {
         id: ts, title: form.title.trim(), artist: form.artist, genre: form.genre,
-        year: form.year, description: form.description, coverUrl,
-        audioUrl: `/music/${folder}/${form.title}.mp3`,
-        lrcUrl: form.lrcFile ? `/music/${folder}/${form.title}.lrc` : undefined,
+        year: form.year, description: form.description, coverUrl: coverUrl ? `${BASE}${coverUrl}` : undefined,
+        audioUrl: `${BASE}/music/${folder}/${form.title}.mp3`,
+        lrcUrl: form.lrcFile ? `${BASE}/music/${folder}/${form.title}.lrc` : undefined,
       }
       setTracks((prev) => [...prev, newTrack])
       setUploadDone(true)
@@ -126,6 +222,13 @@ export default function Music() {
 
   return (
     <div>
+      {loading ? (
+        <div className="flex flex-col items-center justify-center py-24 text-gray-400">
+          <FaSpinner className="animate-spin mb-4" size={28} />
+          <p className="text-sm">正在加载音乐列表...</p>
+        </div>
+      ) : (
+      <>
       <div className="flex items-center justify-between mb-8">
         <div>
           <h2 className="text-3xl font-bold text-gray-800 mb-1">原创音乐</h2>
@@ -283,6 +386,8 @@ export default function Music() {
           </div>
         ))}
       </div>
+    </>
+    )}
     </div>
   )
 }
