@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { FaGithub, FaBilibili, FaEnvelope, FaMusic, FaCode, FaBook, FaGlobe, FaHouse, FaUser, FaLock, FaLockOpen } from 'react-icons/fa6'
+import { FaGithub, FaBilibili, FaEnvelope, FaMusic, FaCode, FaBook, FaHouse, FaUser, FaLock, FaLockOpen } from 'react-icons/fa6'
 import { useEditStore } from '../../stores/editStore'
 
 const navItems = [
@@ -8,7 +8,6 @@ const navItems = [
   { path: '/music', label: '音乐创作', icon: FaMusic },
   { path: '/library', label: '图书馆', icon: FaBook },
   { path: '/code', label: '代码作品', icon: FaCode },
-  { path: '/webnav', label: '网页导航', icon: FaGlobe },
 ]
 
 export default function Sidebar() {
