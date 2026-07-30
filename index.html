@@ -828,7 +828,8 @@ function playTrack(idx){
   if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume()
   audio.play()
   loadLyrics(t)
-  updateMusicUI()
+  if(musicView!=='player'){musicView='player';renderMusic()}
+  else updateMusicUI()
   renderPlaylist()
   showBottomPlayer()
   updateMusicMeta()
