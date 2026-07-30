@@ -35,7 +35,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:linear-gradient(1
 /* Resume */
 .resume{display:flex;gap:28px;align-items:flex-start;padding:36px;margin-bottom:40px;background:rgba(255,255,255,0.75);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.5);border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,0.06),0 2px 8px rgba(0,0,0,0.04);transition:.3s}
 .resume:hover{box-shadow:0 16px 48px rgba(0,0,0,0.1),0 4px 16px rgba(0,0,0,0.06);transform:translateY(-2px)}
-.resume-avatar{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#e0e7ff,#f3e8ff);display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;color:#6366f1;flex-shrink:0}
+.resume-avatar{width:80px;height:80px;border-radius:50%;flex-shrink:0;object-fit:cover;border:2px solid rgba(255,255,255,0.6)}
 .resume-body{flex:1;min-width:0}
 .resume-name{font-size:1.75rem;font-weight:700;color:#1f2937;margin-bottom:4px}
 .resume-edu{font-size:0.85rem;color:#6b7280;margin-bottom:16px;display:flex;align-items:center;gap:4px}
@@ -285,7 +285,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:linear-gradient(1
     <!-- Home -->
     <div class="section active" id="page-home">
       <div class="resume">
-        <div class="resume-avatar">B</div>
+        <img class="resume-avatar" src="https://avatars.githubusercontent.com/ButterJack07" alt="avatar">
         <div class="resume-body">
           <h2 class="resume-name">ButterJack</h2>
           <div class="resume-edu">🎓 南京大学 · 计算机学院 · 2025级 · 计算机科学与技术</div>
