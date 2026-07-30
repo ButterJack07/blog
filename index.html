@@ -10,11 +10,61 @@ body{font-family:system-ui,-apple-system,sans-serif;background:linear-gradient(1
 /* Layout */
 .app{display:flex;min-height:100vh}
 .sidebar{width:220px;position:fixed;top:0;left:0;bottom:0;background:rgba(255,255,255,0.7);backdrop-filter:blur(20px);border-right:1px solid rgba(255,255,255,0.4);padding:24px 16px;z-index:40;display:flex;flex-direction:column}
-.sidebar .logo{font-size:1.25rem;font-weight:700;margin-bottom:32px;background:linear-gradient(135deg,#6366f1,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sidebar .user{text-align:center;margin-bottom:24px}
+.sidebar .avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#e0e7ff,#f3e8ff);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;font-weight:700;color:#6366f1}
+.sidebar .name{font-size:1rem;font-weight:600;margin-bottom:2px}
+.sidebar .subtitle{font-size:0.75rem;color:#9ca3af;margin-bottom:12px}
+.sidebar .social{display:flex;justify-content:center;gap:12px;margin-bottom:16px}
+.sidebar .social a{color:#9ca3af;font-size:0.85rem;text-decoration:none;transition:.2s}
+.sidebar .social a:hover{color:#6366f1}
 .sidebar nav{display:flex;flex-direction:column;gap:4px;flex:1}
 .sidebar nav a{padding:10px 12px;border-radius:10px;text-decoration:none;color:#6b7280;font-size:0.9rem;display:flex;align-items:center;gap:10px;transition:.2s}
 .sidebar nav a:hover,.sidebar nav a.active{background:rgba(99,102,241,0.1);color:#6366f1}
+.sidebar .footer{margin-top:auto;padding-top:16px;border-top:1px solid rgba(0,0,0,0.05)}
+.sidebar .edit-btn{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(99,102,241,0.2);background:transparent;color:#6b7280;font-size:0.8rem;cursor:pointer;transition:.2s;margin-bottom:8px}
+.sidebar .edit-btn:hover{background:rgba(99,102,241,0.05);color:#6366f1}
+.sidebar .edit-btn.active{background:#6366f1;color:#fff;border-color:#6366f1}
+.sidebar .copyright{font-size:0.7rem;color:#d1d5db;text-align:center}
 .main{margin-left:220px;flex:1;padding:32px 48px 100px;max-width:1100px}
+/* Hero */
+.hero{min-height:50vh;display:flex;flex-direction:column;justify-content:center;margin-bottom:48px}
+.hero h2{font-size:2.5rem;font-weight:800;line-height:1.3;margin-bottom:16px;color:#1f2937}
+.hero .ti{color:#6366f1}.hero .tr{color:#f43f5e}
+.hero p{color:#6b7280;font-size:1rem;max-width:500px;line-height:1.6;margin-bottom:32px}
+.qc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;max-width:700px}
+.qc-grid .qc{padding:20px;cursor:pointer;text-decoration:none;color:inherit}
+.qc-grid .qc .qci{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;margin-bottom:12px;background:rgba(255,255,255,0.5)}
+.qc-grid .qc h3{font-size:1rem;font-weight:600;margin-bottom:4px}
+.qc-grid .qc p{font-size:0.8rem;color:#9ca3af;margin:0}
+/* Latest */
+.latest{margin-bottom:48px}
+.latest h3{font-size:1.1rem;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.latest .g{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.latest .g a{padding:16px 20px;text-decoration:none;color:inherit}
+.latest .g a .t{display:flex;align-items:center;gap:6px;font-size:0.75rem;color:#9ca3af;margin-bottom:8px}
+.latest .g a p{font-size:0.85rem;color:#6b7280}
+/* Nav header */
+.nh{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.nh h3{font-size:1.1rem;font-weight:600;display:flex;align-items:center;gap:8px}
+.nh .ab{padding:8px 16px;border-radius:8px;border:none;background:#6366f1;color:#fff;font-size:0.8rem;cursor:pointer;transition:.2s}
+.nh .ab:hover{background:#4f46e5}
+/* Add form */
+.af{margin-bottom:20px;padding:20px;border-radius:12px}
+.af h4{font-size:0.9rem;font-weight:600;margin-bottom:12px}
+.af .fd{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.af input,.af select{padding:10px 12px;border-radius:8px;border:1px solid rgba(0,0,0,0.08);font-size:0.85rem;background:rgba(255,255,255,0.6);outline:none}
+.af input:focus,.af select:focus{border-color:#6366f1}
+.af .ac{display:flex;gap:8px;margin-top:12px}
+/* Delete btn */
+.nav-grid .card{position:relative}
+.db{position:absolute;top:8px;right:8px;width:24px;height:24px;border-radius:50%;border:none;background:rgba(254,202,202,0.5);color:#ef4444;font-size:0.75rem;cursor:pointer;display:none;align-items:center;justify-content:center;transition:.2s}
+.db:hover{background:#fecaca}
+.em .db{display:flex}
+.dh{cursor:grab;position:absolute;top:8px;left:8px;color:#d1d5db;font-size:1rem;user-select:none;display:none;line-height:1}
+.em .dh{display:block}
+.dh:active{cursor:grabbing}
+.card.dragging{opacity:0.3}
+.card.drag-over{border-color:#6366f1!important;box-shadow:0 0 0 2px rgba(99,102,241,0.2)!important}
 /* Card */
 .card{background:rgba(255,255,255,0.7);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.4);border-radius:16px;padding:20px;transition:.3s}
 .card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,0.08)}
@@ -56,10 +106,17 @@ body{font-family:system-ui,-apple-system,sans-serif;background:linear-gradient(1
 .volume-bar{display:flex;align-items:center;gap:8px;font-size:0.8rem;color:#9ca3af}
 .volume-bar .track{flex:1;height:4px;background:rgba(255,255,255,0.5);border-radius:2px;cursor:pointer}
 .volume-bar .fill{height:100%;background:#6366f1;border-radius:2px}
-.music-lyrics{flex:1;min-width:280px;height:400px;overflow:hidden;position:relative;mask-image:linear-gradient(transparent 0%,#000 15%,#000 85%,transparent 100%)}
-.lyrics-scroll{text-align:center;padding-top:160px;transition:transform .5s ease-out}
-.lyrics-scroll p{padding:12px 0;font-size:0.95rem;color:#d1d5db;cursor:pointer;transition:.3s}
-.lyrics-scroll p.active{color:#6366f1;font-size:1.1rem;font-weight:500;transform:scale(1.05)}
+.music-lyrics{flex:1;min-width:280px;height:400px;overflow:hidden;position:relative;mask-image:linear-gradient(transparent 0%,#000 10%,#000 90%,transparent 100%)}
+.lyrics-wrap{height:100%;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none}
+.lyrics-wrap::-webkit-scrollbar{display:none}
+.lyrics-scroll{text-align:center;padding:180px 0}
+.lyrics-scroll p{padding:10px 0;font-size:0.9rem;color:#cbd5e1;cursor:pointer;transition:all .35s;line-height:1.5;position:relative;margin:0 20px;border-radius:8px}
+.lyrics-scroll p:hover{color:#94a3b8}
+.lyrics-scroll p .ts{font-size:0.7rem;color:#94a3b8;margin-right:8px;opacity:0;transition:opacity .3s}
+.lyrics-scroll p:hover .ts{opacity:1}
+.lyrics-scroll p.active{color:#fff;font-size:1rem;font-weight:600;background:rgba(99,102,241,0.15);padding:10px 20px;margin:4px 0;box-shadow:0 0 20px rgba(99,102,241,0.08)}
+.lyrics-scroll p.active .ts{opacity:1;color:#818cf8}
+.lyrics-scroll p.past{color:#64748b;font-size:0.85rem}
 /* Playlist */
 .playlist{display:flex;flex-direction:column;gap:8px;margin-top:24px}
 .playlist-item{padding:12px 16px;border-radius:12px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:.3s}
@@ -111,6 +168,14 @@ body{font-family:system-ui,-apple-system,sans-serif;background:linear-gradient(1
 .chapter-content h1{font-size:1.5rem;font-weight:700;margin:16px 0 8px}
 .chapter-content h2{font-size:1.2rem;font-weight:600;margin:12px 0 6px;border-bottom:1px solid #e5e7eb;padding-bottom:4px}
 .chapter-content br{margin-bottom:8px}
+/* Library edit mode */
+.lib-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.lib-header h2{font-size:1.75rem;font-weight:700;margin-bottom:4px}
+.lib-header p{color:#9ca3af;font-size:0.9rem}
+.edit-bar{display:flex;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid rgba(0,0,0,0.05)}
+.edit-bar button{padding:6px 14px;border-radius:6px;border:none;font-size:0.8rem;cursor:pointer;transition:.2s}
+.editor-textarea{width:100%;min-height:400px;padding:16px;border-radius:12px;border:1px solid rgba(0,0,0,0.08);font-size:0.85rem;font-family:monospace;line-height:1.6;background:rgba(255,255,255,0.5);outline:none;resize:vertical}
+.editor-textarea:focus{border-color:#6366f1}
 /* Loading */
 .loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 0;color:#9ca3af}
 .spinner{width:28px;height:28px;border:3px solid #e5e7eb;border-top-color:#6366f1;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:12px}
@@ -123,34 +188,100 @@ body{font-family:system-ui,-apple-system,sans-serif;background:linear-gradient(1
 .btn-primary:hover{background:#4f46e5}
 .btn-ghost{background:rgba(255,255,255,0.5);color:#6b7280}
 .btn-ghost:hover{background:rgba(255,255,255,0.8)}
+/* Menu btn */
+.menu-btn{display:none;position:fixed;top:12px;left:12px;z-index:51;width:36px;height:36px;border-radius:8px;border:none;background:rgba(255,255,255,0.85);backdrop-filter:blur(10px);font-size:1.25rem;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.06);align-items:center;justify-content:center}
+@media(max-width:768px){
+  .menu-btn{display:flex}
+  .sidebar{transform:translateX(-100%);transition:transform .3s ease;width:260px}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0;padding:16px 16px 80px}
+  .hero h2{font-size:1.8rem}
+  .music-layout{flex-direction:column}
+  .music-cover{width:100%}
+  .music-lyrics{min-width:auto!important;height:250px}
+  .bottom-content{gap:8px;padding:8px 12px}
+  .bottom-content .time{display:none}
+  #bpViz{display:none}
+  .qc-grid{grid-template-columns:1fr}
+  .latest .g,.af .fd{grid-template-columns:1fr}
+  .nav-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+  .bookshelf{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}
+  .sidebar .edit-btn{margin-bottom:4px;font-size:0.75rem}
+}
+/* Visualization */
+.viz-canvas{border-radius:6px;flex-shrink:0}
+.viz-canvas.music{display:block;margin:8px auto 0;width:100%;max-width:260px;height:60px;border-radius:8px}
 </style>
 </head>
 <body>
 
 <div class="app" id="app">
+  <button id="menuBtn" class="menu-btn">☰</button>
+  <div id="sidebarOverlay" style="display:none;position:fixed;inset:0;z-index:39;background:rgba(0,0,0,0.2)"></div>
   <!-- Sidebar -->
   <aside class="sidebar">
-    <div class="logo">ButterJack</div>
+    <div class="user">
+      <div class="avatar">B</div>
+      <div class="name">ButterJack</div>
+      <div class="subtitle">CS学生 / 独立音乐人</div>
+      <div class="social">
+        <a href="https://github.com/ButterJack07" target="_blank">🐙</a>
+        <a href="https://space.bilibili.com/1453945101" target="_blank">📺</a>
+        <a href="mailto:butterjack@email.com">✉️</a>
+      </div>
+    </div>
     <nav id="nav">
       <a href="#" data-page="home" class="active">🏠 首页</a>
       <a href="#" data-page="music">🎵 原创音乐</a>
-      <a href="#" data-page="library">📚 图书馆</a>
+      <a href="#" data-page="nav">🎯 有趣的东西</a>
+      <a href="#" data-page="library">📚 知识库</a>
     </nav>
-    <div style="font-size:0.75rem;color:#d1d5db;text-align:center;padding-top:16px;border-top:1px solid rgba(0,0,0,0.05)">ButterJack © 2026</div>
+    <div class="footer">
+      <button id="editToggle" class="edit-btn">✏️ 编辑模式</button>
+      <div class="copyright">ButterJack © 2026</div>
+    </div>
   </aside>
 
   <!-- Main -->
   <main class="main" id="main">
     <!-- Home -->
     <div class="section active" id="page-home">
-      <div class="page-header"><h2>🌐 网页导航</h2><p>收藏的实用网站</p></div>
+      <div class="hero">
+        <h2>代码写逻辑，<br><span class="ti">旋律</span>写<span class="tr">情绪</span></h2>
+        <p>南京大学计算机系在读，一边写bug一边写歌。在这里记录技术成长、课程笔记，还有那些没说出口的情绪都藏在旋律里。</p>
+      </div>
+
+      <div class="latest">
+        <h3>⚡ 最新动态</h3>
+        <div class="g">
+          <a href="https://github.com/ButterJack07" target="_blank" class="card">
+            <div class="t">🐙 GitHub</div>
+            <p>查看我的开源项目和代码贡献</p>
+          </a>
+          <a href="https://space.bilibili.com/1453945101" target="_blank" class="card">
+            <div class="t" style="color:#ec4899">🎵 Bilibili</div>
+            <p>技术分享、编程vlog和音乐作品</p>
+          </a>
+          <a href="#" data-page="library" class="card" onclick="event.preventDefault();navigate('library')">
+            <div class="t" style="color:#10b981">📖 最新笔记</div>
+            <p>浏览我的知识笔记库</p>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="section" id="page-nav">
+      <div class="page-header"><h2>🎯 有趣的东西</h2><p>收藏的实用网站</p></div>
+      <div style="margin-bottom:16px;text-align:right">
+        <button class="ab" id="addLinkBtn" style="display:none">+ 添加链接</button>
+      </div>
       <div class="categories" id="categories"></div>
       <div class="nav-grid" id="navGrid"></div>
     </div>
 
     <!-- Music -->
     <div class="section" id="page-music">
-      <div class="page-header"><h2>🎵 原创音乐</h2><p>那些代码写不出的情绪，都写在歌里了。</p></div>
       <div id="musicContent">
         <div class="loading"><div class="spinner"></div><span>加载音乐列表...</span></div>
       </div>
@@ -158,7 +289,6 @@ body{font-family:system-ui,-apple-system,sans-serif;background:linear-gradient(1
 
     <!-- Library -->
     <div class="section" id="page-library">
-      <div class="page-header"><h2>📚 图书馆</h2><p>知识笔记本</p></div>
       <div id="libraryContent">
         <div class="bookshelf" id="bookshelf"></div>
       </div>
@@ -177,6 +307,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:linear-gradient(1
         <button id="bpNext">⏭</button>
       </div>
       <div class="time" id="bpTime">0:00 / 0:00</div>
+      <canvas id="bpViz" width="120" height="32" class="viz-canvas"></canvas>
     </div>
   </div>
 </div>
@@ -195,7 +326,7 @@ const defaultLinks = [
 ]
 const STORAGE_LINKS = 'blog_links'
 
-const notebooks = [
+const defaultNotebooks = [
   {id:'n1',title:'计算机组成原理',desc:'核心知识点整理',color:'linear-gradient(135deg,#dbeafe,#eef2ff)',chapters:[
     {id:'c1',title:'第一章：概述',content:'# 计算机系统概述\n\n计算机系统由硬件和软件两部分组成。'}
   ]},
@@ -204,6 +335,12 @@ const notebooks = [
   ]},
   {id:'n3',title:'大模型部署踩坑',desc:'昇腾910B部署记录',color:'linear-gradient(135deg,#f3e8ff,#fdf4ff)',chapters:[]},
 ]
+function loadNotebooks(){
+  try{const s=localStorage.getItem('blog_nb');if(s)return JSON.parse(s)}catch{}
+  return JSON.parse(JSON.stringify(defaultNotebooks))
+}
+function saveNotebooks(){localStorage.setItem('blog_nb',JSON.stringify(notebooks))}
+let notebooks = loadNotebooks()
 
 // ====== STATE ======
 let links = loadLinks()
@@ -213,7 +350,10 @@ let lyrics = []
 let activeLyricIdx = -1
 let notebookStack = [] // ['shelf', notebookId, chapterId]
 let catFilter = '全部'
+let isEditMode = false
 let audioCtx, analyser, sourceNode
+let vizInitialized = false
+let vizRaf = null
 
 // ====== STORAGE ======
 function loadLinks(){
@@ -221,6 +361,67 @@ function loadLinks(){
   return defaultLinks
 }
 function saveLinks(){localStorage.setItem(STORAGE_LINKS,JSON.stringify(links))}
+
+// ====== AUDIO VISUALIZATION ======
+function initVisualizer() {
+  if (vizInitialized) return
+  const audio = document.getElementById('audioPlayer')
+  if (!audio) return
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)()
+    const an = ctx.createAnalyser()
+    an.fftSize = 256
+    const src = ctx.createMediaElementSource(audio)
+    src.connect(an)
+    an.connect(ctx.destination)
+    audioCtx = ctx
+    analyser = an
+    sourceNode = src
+    vizInitialized = true
+    startVizLoop()
+  } catch (e) {
+    console.warn('Viz not available:', e)
+  }
+}
+
+function startVizLoop() {
+  const bufferLength = analyser.frequencyBinCount
+  const dataArray = new Uint8Array(bufferLength)
+  function draw() {
+    analyser.getByteFrequencyData(dataArray)
+
+    const bpViz = document.getElementById('bpViz')
+    if (bpViz && bpViz.offsetParent !== null) {
+      const c = bpViz.getContext('2d')
+      c.clearRect(0, 0, bpViz.width, bpViz.height)
+      const bw = (bpViz.width / bufferLength) * 2.5
+      let x = 0
+      for (let i = 0; i < bufferLength; i++) {
+        const bh = (dataArray[i] / 255) * bpViz.height
+        c.fillStyle = `rgba(99,102,241,${0.3 + (bh / bpViz.height) * 0.5})`
+        c.fillRect(x, bpViz.height - bh, Math.max(1, bw - 1), bh)
+        x += bw
+      }
+    }
+
+    const musicViz = document.getElementById('musicViz')
+    if (musicViz && musicViz.offsetParent !== null) {
+      const c = musicViz.getContext('2d')
+      c.clearRect(0, 0, musicViz.width, musicViz.height)
+      const bw = (musicViz.width / bufferLength) * 2.5
+      let x = 0
+      for (let i = 0; i < bufferLength; i++) {
+        const bh = (dataArray[i] / 255) * musicViz.height
+        c.fillStyle = `rgba(99,102,241,${0.3 + (bh / musicViz.height) * 0.5})`
+        c.fillRect(x, musicViz.height - bh, Math.max(1, bw - 1), bh)
+        x += bw
+      }
+    }
+
+    vizRaf = requestAnimationFrame(draw)
+  }
+  draw()
+}
 
 // ====== ROUTING ======
 function navigate(page){
@@ -230,6 +431,7 @@ function navigate(page){
   if(el)el.classList.add('active')
   const navLink=document.querySelector('#nav a[data-page="'+page+'"]')
   if(navLink)navLink.classList.add('active')
+  if(page==='nav')renderNav()
   if(page==='music')initMusic()
   if(page==='library')renderLibrary()
 }
@@ -252,14 +454,111 @@ function renderHome(){
     })
   })
   renderNavGrid()
+  updateEditUI()
+}
+
+function updateEditUI(){
+  const container=document.getElementById('page-nav')
+  if(container)container.classList.toggle('em',isEditMode)
+  document.getElementById('addLinkBtn').style.display=isEditMode?'':'none'
+  document.getElementById('editToggle').textContent=isEditMode?'🔓 编辑模式':'✏️ 编辑模式'
+  document.getElementById('editToggle').classList.toggle('active',isEditMode)
+  // Re-render nav if visible
+  const nav=document.getElementById('page-nav')
+  if(nav&&nav.classList.contains('active'))renderNav()
+  // Re-render library if visible
+  const lib=document.getElementById('page-library')
+  if(lib&&lib.classList.contains('active'))renderLibrary()
+}
+
+// ====== NAVIGATION PAGE ======
+function renderNav(){
+  const cats=[...new Set(links.map(l=>l.cat))]
+  const catBar=document.getElementById('categories')
+  catBar.innerHTML='<button class="active" data-cat="全部">全部</button>'+
+    cats.map(c=>'<button data-cat="'+c+'">'+c+'</button>').join('')
+  catBar.querySelectorAll('button').forEach(b=>{
+    b.addEventListener('click',()=>{
+      catBar.querySelectorAll('button').forEach(x=>x.classList.remove('active'))
+      b.classList.add('active')
+      catFilter=b.dataset.cat
+      renderNavGrid()
+    })
+  })
+  renderNavGrid()
+  updateEditUI()
 }
 
 function renderNavGrid(){
   const grid=document.getElementById('navGrid')
   const filtered=catFilter==='全部'?links:links.filter(l=>l.cat===catFilter)
-  grid.innerHTML=filtered.map(l=>`<a href="${l.url}" target="_blank">
-    <div class="card"><div class="icon">${l.icon||'🔗'}</div>
-    <h3>${l.title}</h3><p>${l.desc||''}</p><span class="tag">${l.cat}</span></div></a>`).join('')
+  grid.innerHTML=filtered.map(l=>`<div class="card" draggable="${isEditMode}" data-id="${l.id}">
+    <span class="dh">⠿</span>
+    <button class="db" data-id="${l.id}" title="删除">✕</button>
+    <a href="${l.url}" target="_blank" style="text-decoration:none;color:inherit">
+      <div class="icon">${l.icon||'🔗'}</div>
+      <h3>${l.title}</h3><p>${l.desc||''}</p><span class="tag">${l.cat}</span>
+    </a></div>`).join('')
+  grid.querySelectorAll('.db').forEach(btn=>{
+    btn.addEventListener('click',e=>{
+      e.stopPropagation()
+      if(!isEditMode)return
+      links=links.filter(l=>l.id!==btn.dataset.id)
+      saveLinks()
+      renderHome()
+    })
+  })
+  if(isEditMode){
+    let draggedId=null
+    grid.querySelectorAll('.card[draggable]').forEach(card=>{
+      card.addEventListener('dragstart',()=>{draggedId=card.dataset.id;card.classList.add('dragging')})
+      card.addEventListener('dragend',()=>{card.classList.remove('dragging');grid.querySelectorAll('.card').forEach(c=>c.classList.remove('drag-over'))})
+      card.addEventListener('dragover',e=>{e.preventDefault();grid.querySelectorAll('.card').forEach(c=>c.classList.remove('drag-over'));card.classList.add('drag-over')})
+      card.addEventListener('drop',e=>{
+        e.preventDefault()
+        if(!draggedId||draggedId===card.dataset.id)return
+        const fi=links.findIndex(l=>l.id===draggedId),ti=links.findIndex(l=>l.id===card.dataset.id)
+        if(fi===-1||ti===-1)return
+        const[m]=links.splice(fi,1);links.splice(ti,0,m)
+        saveLinks()
+        renderHome()
+      })
+    })
+  }
+}
+
+function showAddForm(){
+  const container=document.getElementById('page-home')
+  const form=document.createElement('div')
+  form.id='addForm'
+  form.className='card af'
+  form.innerHTML=`
+    <h4>新增导航链接</h4>
+    <div class="fd">
+      <input id="afTitle" placeholder="链接名称">
+      <input id="afUrl" placeholder="URL（https://...）">
+      <input id="afDesc" placeholder="描述">
+      <div style="display:flex;gap:8px">
+        <input id="afIcon" placeholder="图标（如 ⚡）" style="flex:1">
+        <select id="afCat" style="flex:1">
+          <option>工具</option><option>框架</option><option>平台</option><option>设计</option><option>博客</option><option>其他</option>
+        </select>
+      </div>
+    </div>
+    <div class="ac">
+      <button class="ab" onclick="addLink()">添加</button>
+      <button class="btn-ghost" onclick="document.getElementById('addForm').remove()">取消</button>
+    </div>`
+  container.insertBefore(form, document.getElementById('categories'))
+}
+
+function addLink(){
+  const title=document.getElementById('afTitle').value.trim()
+  const url=document.getElementById('afUrl').value.trim()
+  if(!title||!url)return
+  links.push({id:Date.now().toString(),title,url,desc:document.getElementById('afDesc').value.trim(),icon:document.getElementById('afIcon').value.trim()||'🔗',cat:document.getElementById('afCat').value})
+  saveLinks()
+  renderHome()
 }
 
 // ====== MUSIC ======
@@ -284,16 +583,15 @@ async function initMusic(){
             const dirR=await fetch(item.url)
             if(dirR.ok){
               const files=await dirR.json()
-for(const f of files){
+              for(const f of files){
                 if(f.name.endsWith('.mp3')){
                   tracks.push({id:String(Date.now()),title:f.name.replace(/\.mp3$/,'').split(' - ')[1]||f.name,artist:f.name.split(' - ')[0]||'黄油夹克',audioUrl:'/music/'+item.name+'/'+f.name})
                   break
                 }
               }
             }
-          }
-        }else if(item.type==='file'&&item.name.endsWith('.mp3')){
-          tracks.push({id:String(Date.now()),title:item.name.replace(/\.mp3$/,'').split(' - ')[1]||item.name,artist:item.name.split(' - ')[0]||'黄油夹克',audioUrl:'/music/'+item.name})
+          } else if(item.type==='file'&&item.name.endsWith('.mp3')){
+            tracks.push({id:String(Date.now()),title:item.name.replace(/\.mp3$/,'').split(' - ')[1]||item.name,artist:item.name.split(' - ')[0]||'黄油夹克',audioUrl:'/music/'+item.name})
           }
         }
       }
@@ -307,7 +605,13 @@ function renderMusic(){
   const container=document.getElementById('musicContent')
   if(!tracks[currentTrackIdx])currentTrackIdx=0
   const t=tracks[currentTrackIdx]
+  const showUpload=window._showUploadForm
   container.innerHTML=`
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <div><h2 style="font-size:1.75rem;font-weight:700">🎵 原创音乐</h2><p style="color:#9ca3af;font-size:0.9rem">那些代码写不出的情绪，都写在歌里了。</p></div>
+      ${isEditMode&&!showUpload?'<button class="ab" onclick="showUploadForm()">+ 新建乐曲</button>':''}
+    </div>
+    ${showUpload?uploadFormHTML():''}
     <div class="music-layout">
       <div class="music-cover">
         <div class="art" id="coverArt">${t&&t.coverUrl?`<img src="${t.coverUrl}">`:'🎵'}</div>
@@ -320,14 +624,137 @@ function renderMusic(){
         <div class="progress-bar" id="progBar"><div class="fill" id="progFill" style="width:0%"></div></div>
         <div class="time-info"><span id="timeCur">0:00</span><span id="timeDur">0:00</span></div>
         <div class="volume-bar">🔊<div class="track" id="volTrack"><div class="fill" id="volFill" style="width:70%"></div></div><span id="volText">70%</span></div>
+        <canvas id="musicViz" width="260" height="60" class="viz-canvas music"></canvas>
       </div>
-      <div class="music-lyrics"><div class="lyrics-scroll" id="lyricsScroll">${t?'<p style="color:#d1d5db">暂无歌词</p>':''}</div></div>
+      <div class="music-lyrics"><div class="lyrics-wrap"><div class="lyrics-scroll" id="lyricsScroll">${t?'<p style="color:#d1d5db">暂无歌词</p>':''}</div></div></div>
     </div>
     <h3 style="margin-top:32px;margin-bottom:16px;font-size:1.1rem">播放列表</h3>
     <div class="playlist" id="playlist"></div>
   `
   renderPlaylist()
   bindMusicEvents()
+  if(showUpload)bindUploadEvents()
+}
+
+function showUploadForm(){
+  window._showUploadForm=true
+  renderMusic()
+}
+
+function hideUploadForm(){
+  delete window._showUploadForm
+  renderMusic()
+}
+
+function uploadFormHTML(){
+  return `<div class="card af" style="margin-bottom:20px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <h4 style="font-size:0.9rem;font-weight:600">上传新乐曲</h4>
+      <button class="btn-ghost" onclick="hideUploadForm()" style="padding:4px 12px;font-size:0.8rem">✕</button>
+    </div>
+    <div id="uploadDone" style="display:none;text-align:center;padding:20px;color:#10b981;font-size:1rem">✅ 上传成功！</div>
+    <div id="uploadForm">
+      <div class="fd">
+        <input id="uTitle" placeholder="歌曲标题 *">
+        <input id="uArtist" placeholder="艺术家" value="黄油夹克">
+        <select id="uGenre"><option>流行</option><option>民谣</option><option>摇滚</option><option>电子</option><option>古典</option><option>爵士</option><option>说唱</option><option>R&B</option><option>其他</option></select>
+        <input id="uYear" placeholder="年份" value="2026">
+        <input id="uDesc" placeholder="描述（可选）" style="grid-column:1/-1">
+        <div style="grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+          <label class="card" style="padding:10px;cursor:pointer;text-align:center;font-size:0.8rem;color:#6b7280">📁 音频 *<input type="file" id="uAudio" accept=".mp3,.wav,.ogg" style="display:none"></label>
+          <label class="card" style="padding:10px;cursor:pointer;text-align:center;font-size:0.8rem;color:#6b7280">📄 歌词<input type="file" id="uLrc" accept=".lrc,.txt" style="display:none"></label>
+          <label class="card" style="padding:10px;cursor:pointer;text-align:center;font-size:0.8rem;color:#6b7280">🖼️ 封面<input type="file" id="uCover" accept=".jpg,.jpeg,.png,.webp" style="display:none"></label>
+        </div>
+        <div style="grid-column:1/-1">
+          <input id="uToken" type="password" placeholder="GitHub Token（settings→tokens）" style="width:100%">
+        </div>
+      </div>
+      <div id="uError" style="color:#ef4444;font-size:0.8rem;margin-top:8px;display:none"></div>
+      <div class="ac">
+        <button class="ab" id="uSubmitBtn">⬆ 上传到 GitHub</button>
+        <button class="btn-ghost" onclick="hideUploadForm()">取消</button>
+      </div>
+    </div>
+  </div>`
+}
+
+function bindUploadEvents(){
+  document.getElementById('uSubmitBtn')?.addEventListener('click',handleUpload)
+}
+
+async function handleUpload(){
+  const title=document.getElementById('uTitle').value.trim()
+  const token=document.getElementById('uToken').value.trim()
+  if(!title||!token){showUploadError('请填写歌曲标题和 GitHub Token');return}
+  const audioFile=document.getElementById('uAudio').files[0]
+  if(!audioFile){showUploadError('请选择音频文件');return}
+  const artist=document.getElementById('uArtist').value.trim()||'黄油夹克'
+  const genre=document.getElementById('uGenre').value
+  const year=document.getElementById('uYear').value.trim()
+  const desc=document.getElementById('uDesc').value.trim()
+  const lrcFile=document.getElementById('uLrc').files[0]
+  const coverFile=document.getElementById('uCover').files[0]
+
+  document.getElementById('uSubmitBtn').disabled=true
+  document.getElementById('uSubmitBtn').textContent='上传中...'
+  hideUploadError()
+
+  try{
+    const folder=title.replace(/[/\\?%*:|"<>]/g,'_')
+    const ts=Date.now().toString()
+    const base=`music/${folder}`
+
+    // Upload audio
+    await ghUpload(`${base}/${title}.mp3`,audioFile,token,`上传音乐: ${title}`)
+    // Upload lrc
+    if(lrcFile)await ghUpload(`${base}/${title}.lrc`,lrcFile,token,`上传歌词: ${title}`)
+    // Upload cover
+    let coverUrl
+    if(coverFile){
+      const ext=coverFile.name.split('.').pop()
+      await ghUpload(`${base}/cover.${ext}`,coverFile,token,`上传封面: ${title}`)
+      coverUrl=`/music/${folder}/cover.${ext}`
+    }
+    // Upload info.json
+    const info={id:ts,title,artist,genre,year,description:desc,coverUrl,audioUrl:`/music/${folder}/${title}.mp3`,lrcUrl:lrcFile?`/music/${folder}/${title}.lrc`:undefined}
+    await ghUpload(`${base}/info.json`,new File([JSON.stringify(info,null,2)],'info.json',{type:'application/json'}),token,`创建音乐信息: ${title}`)
+
+    // Add to local tracks
+    tracks.push(info)
+    document.getElementById('uploadForm').style.display='none'
+    document.getElementById('uploadDone').style.display='block'
+    setTimeout(()=>{hideUploadForm();renderMusic()},1500)
+  }catch(e){
+    showUploadError(e.message||'上传失败')
+    document.getElementById('uSubmitBtn').disabled=false
+    document.getElementById('uSubmitBtn').textContent='⬆ 上传到 GitHub'
+  }
+}
+
+async function ghUpload(path,file,msg,token){
+  const buf=await file.arrayBuffer()
+  const bytes=new Uint8Array(buf)
+  let binary=''
+  for(const b of bytes)binary+=String.fromCharCode(b)
+  const content=btoa(binary)
+  const r=await fetch(`https://api.github.com/repos/ButterJack07/blog/contents/${path}`,{
+    method:'PUT',
+    headers:{Authorization:`token ${token}`, 'Content-Type':'application/json'},
+    body:JSON.stringify({message:msg,content})
+  })
+  if(!r.ok){
+    const e=await r.json().catch(()=>({}))
+    throw new Error(e.message||`HTTP ${r.status}`)
+  }
+}
+
+function showUploadError(m){
+  const el=document.getElementById('uError')
+  if(el){el.textContent=m;el.style.display='block'}
+}
+function hideUploadError(){
+  const el=document.getElementById('uError')
+  if(el)el.style.display='none'
 }
 
 function renderPlaylist(){
@@ -358,11 +785,23 @@ function playTrack(idx){
   const t=tracks[idx]
   audio.src=baseUrl+t.audioUrl
   audio.load()
+  if (!vizInitialized) initVisualizer()
+  if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume()
   audio.play()
   loadLyrics(t)
   updateMusicUI()
   renderPlaylist()
   showBottomPlayer()
+  updateMusicMeta()
+}
+
+function updateMusicMeta(){
+  const t=tracks[currentTrackIdx]
+  if(!t)return
+  const titleEl=document.getElementById('musicTitle')
+  const metaEl=document.getElementById('musicMeta')
+  if(titleEl)titleEl.textContent=t.title
+  if(metaEl)metaEl.textContent=[t.artist,t.genre,t.year].filter(Boolean).join(' · ')
 }
 
 function bindMusicEvents(){
@@ -386,6 +825,7 @@ function bindMusicEvents(){
 function togglePlay(){
   if(audio.paused){
     if(!audio.src&&tracks.length>0){playTrack(currentTrackIdx);return}
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume()
     audio.play()
   }else audio.pause()
   updateMusicUI()
@@ -400,17 +840,22 @@ audio.addEventListener('timeupdate',()=>{
   document.getElementById('bpTime').textContent=fmtTime(ct)+' / '+fmtTime(dur)
   // lyrics
   if(lyrics.length){
-    let idx=lyrics.findLastIndex(l=>ct>=l.time)
+    let idx=findLastIdx(lyrics,l=>ct>=l.time)
     if(idx!==activeLyricIdx){
       activeLyricIdx=idx
       const container=document.getElementById('lyricsScroll')
       if(container){
         container.querySelectorAll('p').forEach((p,i)=>{
           p.classList.toggle('active',i===idx)
+          p.classList.toggle('past',i<idx)
         })
         if(idx>=0){
           const active=container.children[idx]
-          if(active)container.style.transform='translateY(-'+(active.offsetTop-container.offsetHeight/2+active.offsetHeight/2)+'px)'
+          if(active){
+            const wrap=container.parentElement
+            const target=active.offsetTop+active.offsetHeight/2-wrap.offsetHeight/2
+            wrap.scrollTo({top:Math.max(0,Math.min(target,container.scrollHeight-wrap.offsetHeight)),behavior:'smooth'})
+          }
         }
       }
     }
@@ -444,11 +889,17 @@ function fmtTime(s){
   return m+':'+(sec<10?'0':'')+sec
 }
 
+function findLastIdx(arr,fn){
+  for(let i=arr.length-1;i>=0;i--)if(fn(arr[i],i,arr))return i
+  return -1
+}
+
 async function loadLyrics(track){
   lyrics=[]
   activeLyricIdx=-1
   const container=document.getElementById('lyricsScroll')
   if(!container)return
+  container.parentElement.scrollTop=0
   if(!track.lrcUrl){
     container.innerHTML='<p style="color:#d1d5db">暂无歌词</p>'
     return
@@ -473,8 +924,14 @@ async function loadLyrics(track){
     }
     if(parsed.length){
       lyrics=parsed.sort((a,b)=>a.time-b.time)
-      container.innerHTML=lyrics.map(l=>'<p>'+l.text+'</p>').join('')
+      container.innerHTML=lyrics.map((l,i)=>'<p data-idx="'+i+'" data-time="'+l.time+'"><span class="ts">'+fmtTime(l.time)+'</span>'+l.text+'</p>').join('')
+      container.querySelectorAll('p[data-time]').forEach(p=>{
+        p.addEventListener('click',()=>{
+          audio.currentTime=parseFloat(p.dataset.time)
+        })
+      })
     } else {
+      container.innerHTML='<p style="color:#d1d5db">暂无歌词</p>'
       container.innerHTML='<p style="color:#d1d5db">暂无歌词</p>'
     }
   }catch{
@@ -506,9 +963,14 @@ function renderLibrary(){
 
 function renderShelf(){
   const el=document.getElementById('libraryContent')
-  el.innerHTML=`<div class="bookshelf">${notebooks.map(n=>`
+  const header=`<div class="lib-header"><div><h2 style="font-size:1.75rem;font-weight:700;margin-bottom:4px">📚 知识库</h2><p style="color:#9ca3af;font-size:0.9rem">知识笔记本</p></div>${
+    isEditMode?'<button class="ab" onclick="showNewNotebook()">+ 新建笔记</button>':''}</div>`
+  el.innerHTML=header+`<div class="bookshelf">${notebooks.map(n=>`
     <div class="book" data-id="${n.id}">
-      <div class="spine" style="background:${n.color};border-radius:16px"><div style="font-size:3rem">📖</div></div>
+      <div class="spine" style="background:${n.color};position:relative">
+        <div style="font-size:3rem">📖</div>
+        ${isEditMode?`<button class="db" style="display:flex;top:4px;right:4px" onclick="event.stopPropagation();deleteNotebook('${n.id}')">✕</button>`:''}
+      </div>
       <h3>${n.title}</h3>
       <p>${n.chapters.length} 章节</p>
     </div>
@@ -521,19 +983,41 @@ function renderShelf(){
   })
 }
 
+function showNewNotebook(){
+  const title=prompt('笔记本名称：')
+  if(!title||!title.trim())return
+  const id='nb'+Date.now()
+  notebooks.push({id,title:title.trim(),desc:'',color:'linear-gradient(135deg,#fef3c7,#fde68a)',chapters:[]})
+  saveNotebooks()
+  renderShelf()
+}
+
+function deleteNotebook(id){
+  if(!confirm('确定删除此笔记本？'))return
+  notebooks=notebooks.filter(n=>n.id!==id)
+  saveNotebooks()
+  renderShelf()
+}
+
 function renderNotebook(nb){
   const el=document.getElementById('libraryContent')
   el.innerHTML=`<button class="back-btn" id="libBack">← 返回书架</button>
     <div class="card" style="padding:24px;margin-bottom:24px;background:${nb.color||'rgba(255,255,255,0.7)'}">
-      <h2 style="font-size:1.5rem;font-weight:700;margin-bottom:8px">${nb.title}</h2>
-      <p style="color:#6b7280;font-size:0.9rem">${nb.desc||''}</p>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <h2 style="font-size:1.5rem;font-weight:700;margin-bottom:8px">${nb.title}</h2>
+          <p style="color:#6b7280;font-size:0.9rem">${nb.desc||''}</p>
+        </div>
+      </div>
     </div>
     <div class="chapter-list">${nb.chapters.length?nb.chapters.sort((a,b)=>a.order-b.order).map(ch=>`
-      <div class="card chapter-item" data-ch="${ch.id}">
+      <div class="card chapter-item" data-ch="${ch.id}" style="position:relative">
+        ${isEditMode?`<button class="db" style="display:flex" onclick="event.stopPropagation();deleteChapter('${nb.id}','${ch.id}')">✕</button>`:''}
         <div><h4>${ch.title}</h4><p>${ch.content.length>60?ch.content.slice(0,60)+'...':ch.content}</p></div>
         <div class="icon">📖</div>
       </div>
-    `).join(''):'<p style="text-align:center;padding:40px;color:#9ca3af">暂无章节</p>'}</div>`
+    `).join(''):'<p style="text-align:center;padding:40px;color:#9ca3af">暂无章节</p>'}
+    ${isEditMode?`<button class="card" style="width:100%;padding:16px;text-align:center;color:#6366f1;cursor:pointer;border:none;font-size:0.9rem;margin-top:8px" onclick="showNewChapter('${nb.id}')">+ 新建章节</button>`:''}</div>`
   document.getElementById('libBack').addEventListener('click',renderShelf)
   el.querySelectorAll('.chapter-item').forEach(item=>{
     item.addEventListener('click',()=>{
@@ -543,18 +1027,112 @@ function renderNotebook(nb){
   })
 }
 
+function showNewChapter(nbId){
+  const title=prompt('章节名称：')
+  if(!title||!title.trim())return
+  const nb=notebooks.find(n=>n.id===nbId)
+  if(!nb)return
+  const id='ch'+Date.now()
+  nb.chapters.push({id,title:title.trim(),content:'# '+title.trim(),order:nb.chapters.length+1})
+  saveNotebooks()
+  renderNotebook(nb)
+}
+
+function deleteChapter(nbId,chId){
+  if(!confirm('确定删除此章节？'))return
+  const nb=notebooks.find(n=>n.id===nbId)
+  if(!nb)return
+  nb.chapters=nb.chapters.filter(c=>c.id!==chId)
+  saveNotebooks()
+  renderNotebook(nb)
+}
+
+function cancelChapterEdit(){
+  delete window._editingChapterId
+  const nb=notebooks.find(x=>x.id===notebookStack[1])
+  if(!nb)return
+  // re-render current chapter in preview mode
+  const ch=nb.chapters.find(c=>c.id===(window._lastChapterId||nb.chapters[0]?.id))
+  if(ch)renderChapter(ch)
+}
+
 function renderChapter(ch){
   const el=document.getElementById('libraryContent')
+  window._lastChapterId=ch.id
+  const editMode=window._editingChapterId===ch.id
   el.innerHTML=`<button class="back-btn" id="chBack">← 返回目录</button>
-    <div class="card"><h2 style="font-size:1.5rem;font-weight:700;margin-bottom:24px">${ch.title}</h2>
-    <div class="chapter-content">${ch.content.replace(/^# (.+)$/gm,'<h1>$1</h1>').replace(/^## (.+)$/gm,'<h2>$1</h2>').replace(/\n/g,'<br>')}</div></div>`
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+        <h2 style="font-size:1.5rem;font-weight:700">${ch.title}</h2>
+        ${isEditMode?`<button class="ab" onclick="toggleChapterEdit('${ch.id}')">${editMode?'预览':'编辑'}</button>`:''}
+      </div>
+      ${editMode
+        ?`<textarea class="editor-textarea" id="chEditor">${ch.content}</textarea>
+          <div class="edit-bar">
+            <button class="ab" onclick="saveChapter('${ch.id}')">保存</button>
+            <button class="btn-ghost" onclick="cancelChapterEdit()">取消</button>
+          </div>`
+        :`<div class="chapter-content">${ch.content.replace(/^# (.+)$/gm,'<h1>$1</h1>').replace(/^## (.+)$/gm,'<h2>$1</h2>').replace(/\n/g,'<br>')}</div>`}
+    </div>`
   document.getElementById('chBack').addEventListener('click',()=>{
+    delete window._editingChapterId
     const nb=notebooks.find(x=>x.id===notebookStack[1])
     if(nb)renderNotebook(nb)
   })
 }
 
+function toggleChapterEdit(chId){
+  if(window._editingChapterId===chId)delete window._editingChapterId
+  else window._editingChapterId=chId
+  const nb=notebooks.find(x=>x.id===notebookStack[1])
+  if(!nb)return
+  const ch=nb.chapters.find(c=>c.id===chId)
+  if(ch)renderChapter(ch)
+}
+
+function saveChapter(chId){
+  const nb=notebooks.find(x=>x.id===notebookStack[1])
+  if(!nb)return
+  const ch=nb.chapters.find(c=>c.id===chId)
+  if(!ch)return
+  ch.content=document.getElementById('chEditor').value
+  saveNotebooks()
+  delete window._editingChapterId
+  renderChapter(ch)
+}
+
+function cancelChapterEdit(){
+  delete window._editingChapterId
+  const nb=notebooks.find(x=>x.id===notebookStack[1])
+  if(!nb)return
+  const ch=nb.chapters.find(c=>c.id===window._editingChapterId)||nb.chapters[0]
+  if(ch)renderChapter(ch)
+}
+
 // ====== INIT ======
+document.getElementById('editToggle').addEventListener('click',()=>{
+  isEditMode=!isEditMode
+  updateEditUI()
+  // Re-render music if visible (upload button)
+  const ms=document.getElementById('page-music')
+  if(ms&&ms.classList.contains('active'))initMusic()
+})
+document.getElementById('addLinkBtn').addEventListener('click',showAddForm)
+document.getElementById('menuBtn').addEventListener('click',()=>{
+  document.querySelector('.sidebar').classList.toggle('open')
+  document.getElementById('sidebarOverlay').style.display=document.querySelector('.sidebar').classList.contains('open')?'block':'none'
+})
+// Close sidebar on nav click (mobile)
+document.querySelectorAll('#nav a').forEach(a=>{
+  a.addEventListener('click',()=>{
+    document.querySelector('.sidebar').classList.remove('open')
+    document.getElementById('sidebarOverlay').style.display='none'
+  })
+})
+document.getElementById('sidebarOverlay').addEventListener('click',()=>{
+  document.querySelector('.sidebar').classList.remove('open')
+  document.getElementById('sidebarOverlay').style.display='none'
+})
 const hash=location.hash.replace('#/','')||'home'
 navigate(hash)
 renderHome()
