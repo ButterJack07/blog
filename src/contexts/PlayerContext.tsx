@@ -40,10 +40,10 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const sourceRef = useRef<MediaElementAudioSourceNode | null>(null)
   const autoPlayRef = useRef(false)
 
-  // Initialize audio pipeline once (lazy — AudioContext created on first interaction)
+  // Initialize audio pipeline once
   useEffect(() => {
     const audio = audioRef.current
-    if (!audio) return
+    if (!audio || sourceRef.current) return
     const ctx = new AudioContext()
     const an = ctx.createAnalyser()
     an.fftSize = 256
@@ -53,7 +53,6 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     setAudioContext(ctx)
     setAnalyser(an)
     sourceRef.current = src
-    return () => { ctx.close() }
   }, [])
 
   // Load lyrics when track changes
