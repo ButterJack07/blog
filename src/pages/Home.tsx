@@ -94,6 +94,7 @@ export default function Home() {
   const [newLink, setNewLink] = useState({ title: '', url: '', description: '', icon: '🔗', category: '工具' })
   const [events, setEvents] = useState<GitHubEvent[]>([])
   const [eventsLoading, setEventsLoading] = useState(true)
+  const [eventsExpanded, setEventsExpanded] = useState(false)
 
   useEffect(() => {
     fetch('https://api.github.com/users/ButterJack07/events/public')
@@ -146,7 +147,7 @@ export default function Home() {
           </div>
         ) : (
           <div className="space-y-3">
-            {events.map((event) => {
+            {(eventsExpanded ? events : events.slice(0, 2)).map((event) => {
               const Icon = getEventIcon(event.type)
               return (
                 <a
@@ -169,7 +170,15 @@ export default function Home() {
             })}
           </div>
         )}
-        <div className="mt-4 text-center">
+        <div className="mt-4 text-center flex items-center justify-center gap-4">
+          {events.length > 2 && (
+            <button
+              onClick={() => setEventsExpanded(!eventsExpanded)}
+              className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-indigo-600 transition-colors"
+            >
+              {eventsExpanded ? '收起' : `展开全部 ${events.length} 条`}
+            </button>
+          )}
           <a
             href="https://github.com/ButterJack07"
             target="_blank"
