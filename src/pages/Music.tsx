@@ -59,56 +59,57 @@ async function fetchInfo(path: string, token?: string): Promise<MusicTrack | nul
   }
 }
 
-async function loadTracksFromRepo(token?: string): Promise<MusicTrack[]> {
+async function loadTracksFromRepo(_token?: string): Promise<MusicTrack[]> {
   const cached = localStorage.getItem(CACHE_KEY)
   if (cached) {
     try { return JSON.parse(cached) } catch {}
   }
 
-  const items = await fetchDir(MUSIC_PATH, token)
   const results: MusicTrack[] = []
 
-  for (const item of items) {
-    if (item.type === 'dir') {
-      const info = await fetchInfo(`${MUSIC_PATH}/${item.name}/info.json`, token)
-      if (info) {
-        results.push(info)
-        continue
-      }
-      const files = await fetchDir(`${MUSIC_PATH}/${item.name}`, token)
-      for (const f of files) {
-        const partial = fileNameToTrack(f.name, item.name)
-        if (partial) {
-          const ts = Date.now() + results.length
-          results.push({
-            id: String(ts),
-            title: partial.title || item.name,
-            artist: partial.artist || '黄油夹克',
-            audioUrl: partial.audioUrl || `${BASE}/music/${item.name}/${f.name}`,
-            lrcUrl: partial.lrcUrl,
-          })
-          break
+  try {
+    const res = await fetch(`${BASE}/music/tracks.json`)
+    if (res.ok) {
+      const list = await res.json()
+      results.push(...list.map((t: MusicTrack) => ({
+        ...t,
+        audioUrl: `${BASE}${t.audioUrl}`,
+        lrcUrl: t.lrcUrl ? `${BASE}${t.lrcUrl}` : undefined,
+        coverUrl: t.coverUrl ? `${BASE}${t.coverUrl}` : undefined,
+      })))
+    }
+  } catch {}
+
+  if (results.length === 0) {
+    try {
+      const items = await fetchDir(MUSIC_PATH, _token)
+      for (const item of items) {
+        if (item.type === 'dir') {
+          const info = await fetchInfo(`${MUSIC_PATH}/${item.name}/info.json`, _token)
+          if (info) { results.push(info); continue }
+          const files = await fetchDir(`${MUSIC_PATH}/${item.name}`, _token)
+          for (const f of files) {
+            const p = fileNameToTrack(f.name, item.name)
+            if (p) {
+              results.push({ id: String(Date.now() + results.length), ...p } as MusicTrack)
+              break
+            }
+          }
+        } else if (item.type === 'file' && item.name.endsWith('.mp3')) {
+          const p = fileNameToTrack(item.name, '')
+          if (p) {
+            results.push({ id: String(Date.now() + results.length), ...p } as MusicTrack)
+          }
         }
       }
-    } else if (item.type === 'file' && item.name.endsWith('.mp3')) {
-      const partial = fileNameToTrack(item.name, '')
-      if (partial) {
-        results.push({
-          id: String(Date.now() + results.length),
-          title: partial.title || '未知',
-          artist: partial.artist || '黄油夹克',
-          audioUrl: `${BASE}/music/${item.name}`,
-          lrcUrl: `${BASE}/music/${item.name.replace(/\.mp3$/, '.lrc')}`,
-        })
-      }
-    }
+    } catch {}
   }
 
   if (results.length > 0) {
     localStorage.setItem(CACHE_KEY, JSON.stringify(results))
   }
 
-return results
+  return results
 }
 
 export default function Music() {
@@ -126,8 +127,7 @@ export default function Music() {
   const lyricsRef = useRef<HTMLUListElement>(null)
 
   useEffect(() => {
-    const token = localStorage.getItem('github_token') || undefined
-    loadTracksFromRepo(token).then((list) => {
+    loadTracksFromRepo().then((list) => {
       if (list.length > 0) setTracks(list)
       setLoading(false)
     }).catch((err) => {
