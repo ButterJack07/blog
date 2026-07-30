@@ -10,13 +10,6 @@ body{font-family:system-ui,-apple-system,sans-serif;background:linear-gradient(1
 /* Layout */
 .app{display:flex;min-height:100vh}
 .sidebar{width:220px;position:fixed;top:0;left:0;bottom:0;background:rgba(255,255,255,0.7);backdrop-filter:blur(20px);border-right:1px solid rgba(255,255,255,0.4);padding:24px 16px;z-index:40;display:flex;flex-direction:column}
-.sidebar .user{text-align:center;margin-bottom:24px}
-.sidebar .avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#e0e7ff,#f3e8ff);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;font-weight:700;color:#6366f1}
-.sidebar .name{font-size:1rem;font-weight:600;margin-bottom:2px}
-.sidebar .subtitle{font-size:0.75rem;color:#9ca3af;margin-bottom:12px}
-.sidebar .social{display:flex;justify-content:center;gap:12px;margin-bottom:16px}
-.sidebar .social a{color:#9ca3af;font-size:0.85rem;text-decoration:none;transition:.2s}
-.sidebar .social a:hover{color:#6366f1}
 .sidebar nav{display:flex;flex-direction:column;gap:4px;flex:1}
 .sidebar nav a{padding:10px 12px;border-radius:10px;text-decoration:none;color:#6b7280;font-size:0.9rem;display:flex;align-items:center;gap:10px;transition:.2s}
 .sidebar nav a:hover,.sidebar nav a.active{background:rgba(99,102,241,0.1);color:#6366f1}
@@ -259,16 +252,6 @@ body{font-family:system-ui,-apple-system,sans-serif;background:linear-gradient(1
   <!-- Sidebar -->
   <aside class="sidebar">
     <button id="editFabMobile" class="edit-btn" style="position:absolute;top:8px;right:8px;width:32px;height:32px;padding:0;border-radius:50%;font-size:0.85rem;z-index:1;align-items:center;justify-content:center">🔧</button>
-    <div class="user">
-      <div class="avatar">B</div>
-      <div class="name">ButterJack</div>
-      <div class="subtitle">CS学生 / 独立音乐人</div>
-      <div class="social">
-        <a href="https://github.com/ButterJack07" target="_blank">🐙</a>
-        <a href="https://space.bilibili.com/1453945101" target="_blank">📺</a>
-        <a href="mailto:butterjack@email.com">✉️</a>
-      </div>
-    </div>
     <nav id="nav">
       <a href="#" data-page="home" class="active">🏠 首页</a>
       <a href="#" data-page="music">🎵 原创音乐</a>
