@@ -1,6 +1,6 @@
 const GITHUB_API = 'https://api.github.com'
 const OWNER = 'ButterJack07'
-const REPO = 'blog-content'
+const REPO = 'blog'
 
 export async function fetchContent(path: string) {
   const res = await fetch(`${GITHUB_API}/repos/${OWNER}/${REPO}/contents/${path}`)

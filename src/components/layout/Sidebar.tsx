@@ -1,19 +1,18 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { FaGithub, FaBilibili, FaEnvelope, FaMusic, FaCode, FaBook, FaHouse, FaUser, FaLock, FaLockOpen } from 'react-icons/fa6'
+import { FaGithub, FaBilibili, FaEnvelope, FaMusic, FaBook, FaHouse, FaUser, FaLock, FaLockOpen } from 'react-icons/fa6'
 import { useEditStore } from '../../stores/editStore'
 
 const navItems = [
   { path: '/', label: '首页', icon: FaHouse },
-  { path: '/music', label: '音乐创作', icon: FaMusic },
+  { path: '/music', label: '原创音乐', icon: FaMusic },
   { path: '/library', label: '图书馆', icon: FaBook },
-  { path: '/code', label: '代码作品', icon: FaCode },
 ]
 
 export default function Sidebar() {
   const location = useLocation()
   const { isEditMode, toggleEditMode } = useEditStore()
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('github_token'))
   const [showLogin, setShowLogin] = useState(false)
   const [token, setToken] = useState('')
 
@@ -22,6 +21,7 @@ export default function Sidebar() {
       localStorage.setItem('github_token', token.trim())
       setIsLoggedIn(true)
       setShowLogin(false)
+      setToken('')
     }
   }
 
@@ -99,15 +99,25 @@ export default function Sidebar() {
         ) : (
           showLogin ? (
             <div className="glass-card rounded-xl p-4 space-y-3">
-              <p className="text-xs text-gray-500">输入 GitHub Token 登录以编辑内容</p>
+              <p className="text-xs text-gray-600 font-medium">GitHub Token 登录</p>
+              <p className="text-xs text-gray-400">用于编辑和上传内容到你的 GitHub 仓库</p>
               <input
                 type="password"
                 value={token}
                 onChange={(e) => setToken(e.target.value)}
-                placeholder="ghp_..."
+                placeholder="输入 Personal Access Token..."
                 className="w-full glass-input rounded-lg px-3 py-2 text-xs"
                 onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
               />
+              <div className="flex items-center justify-between">
+                <a
+                  href="https://github.com/settings/tokens/new?description=blog-editor&scopes=repo"
+                  target="_blank"
+                  className="text-xs text-indigo-500 hover:text-indigo-700 underline underline-offset-2"
+                >
+                  生成 Token →
+                </a>
+              </div>
               <div className="flex gap-2">
                 <button onClick={handleLogin} className="flex-1 px-3 py-1.5 bg-indigo-500 text-white rounded-lg text-xs hover:bg-indigo-600">登录</button>
                 <button onClick={() => setShowLogin(false)} className="px-3 py-1.5 text-xs text-gray-500 hover:text-gray-700">取消</button>

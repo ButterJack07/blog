@@ -1,14 +1,71 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import { FaMusic, FaCode, FaBook, FaGlobe, FaGithub, FaBolt, FaPlus, FaTrash, FaArrowUpRightFromSquare } from 'react-icons/fa6'
+import { FaGlobe, FaGithub, FaBolt, FaPlus, FaTrash, FaArrowUpRightFromSquare, FaCodeFork, FaStar, FaCode } from 'react-icons/fa6'
 import { useEditStore } from '../stores/editStore'
 import type { WebLink } from '../types'
 
-const quickCards = [
-  { path: '/music', icon: FaMusic, title: '音乐创作间', desc: '原创歌曲、demo片段，那些代码写不出的话都在这里。', color: 'from-rose-100 to-orange-50' },
-  { path: '/code', icon: FaCode, title: '技术实验室', desc: '课程项目、技术笔记，从C++到大模型的所有探索。', color: 'from-blue-100 to-indigo-50' },
-  { path: '/library', icon: FaBook, title: '图书馆', desc: '知识笔记本，按书目整理，支持在线编辑与阅读。', color: 'from-emerald-100 to-teal-50' },
-]
+interface GitHubEvent {
+  id: string
+  type: string
+  repo: { name: string }
+  payload: {
+    action?: string
+    ref?: string
+    ref_type?: string
+    commits?: { message: string; sha: string }[]
+    pull_request?: { title: string; html_url: string }
+    issue?: { title: string; html_url: string }
+    forkee?: { full_name: string }
+  }
+  created_at: string
+}
+
+function getEventIcon(type: string) {
+  if (type.startsWith('Push')) return FaCode
+  if (type.startsWith('Create')) return FaCodeFork
+  if (type.startsWith('Watch')) return FaStar
+  if (type.startsWith('Fork')) return FaCodeFork
+  if (type.startsWith('PullRequest')) return FaCode
+  if (type.startsWith('Issues')) return FaCodeFork
+  if (type.startsWith('Delete')) return FaTrash
+  return FaGithub
+}
+
+function formatEventText(event: GitHubEvent): string {
+  const repo = event.repo.name.replace('ButterJack07/', '')
+  switch (event.type) {
+    case 'PushEvent': {
+      const count = event.payload.commits?.length || 0
+      const msg = event.payload.commits?.[0]?.message?.split('\n')[0] || ''
+      return `推送到 <strong>${repo}</strong> · ${msg}${count > 1 ? ` (+${count - 1} commits)` : ''}`
+    }
+    case 'CreateEvent':
+      return `创建了 ${event.payload.ref_type} <strong>${event.payload.ref || repo}</strong>`
+    case 'WatchEvent':
+      return `收藏了 <strong>${repo}</strong> ⭐`
+    case 'ForkEvent':
+      return `Fork 了 <strong>${repo}</strong>`
+    case 'PullRequestEvent':
+      return `${event.payload.action === 'opened' ? '创建' : event.payload.action} PR: <strong>${event.payload.pull_request?.title || repo}</strong>`
+    case 'IssuesEvent':
+      return `${event.payload.action === 'opened' ? '创建' : event.payload.action} Issue: <strong>${event.payload.issue?.title || repo}</strong>`
+    case 'DeleteEvent':
+      return `删除了 ${event.payload.ref_type} <strong>${event.payload.ref}</strong>`
+    default:
+      return `${event.type} · <strong>${repo}</strong>`
+  }
+}
+
+function timeAgo(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime()
+  const mins = Math.floor(diff / 60000)
+  if (mins < 1) return '刚刚'
+  if (mins < 60) return `${mins} 分钟前`
+  const hours = Math.floor(mins / 60)
+  if (hours < 24) return `${hours} 小时前`
+  const days = Math.floor(hours / 24)
+  if (days < 30) return `${days} 天前`
+  return new Date(dateStr).toLocaleDateString('zh-CN')
+}
 
 const defaultLinks: WebLink[] = [
   { id: '1', title: 'Vite', url: 'https://vite.dev', description: '下一代前端构建工具', icon: '⚡', category: '工具' },
@@ -35,6 +92,18 @@ export default function Home() {
   const [activeCategory, setActiveCategory] = useState('全部')
   const [showAddForm, setShowAddForm] = useState(false)
   const [newLink, setNewLink] = useState({ title: '', url: '', description: '', icon: '🔗', category: '工具' })
+  const [events, setEvents] = useState<GitHubEvent[]>([])
+  const [eventsLoading, setEventsLoading] = useState(true)
+
+  useEffect(() => {
+    fetch('https://api.github.com/users/ButterJack07/events/public')
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data)) setEvents(data.slice(0, 10))
+      })
+      .catch(() => {})
+      .finally(() => setEventsLoading(false))
+  }, [])
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(links))
@@ -57,54 +126,57 @@ export default function Home() {
 
   return (
     <>
-      <div className="min-h-[60vh] flex flex-col justify-center mb-12">
-        <h2 className="text-4xl md:text-6xl font-bold text-gray-800 mb-6 leading-tight">
-          代码写逻辑，<br />
-          <span className="text-indigo-500">旋律</span>写<span className="text-rose-400">情绪</span>
-        </h2>
-        <p className="text-lg text-gray-500 mb-10 max-w-2xl">
-          南京大学计算机系在读，一边写bug一边写歌。在这里记录技术成长、课程笔记，还有那些没说出口的情绪都藏在旋律里。
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl">
-          {quickCards.map((card) => (
-            <Link
-              key={card.path}
-              to={card.path}
-              className={`glass-card rounded-xl p-6 cursor-pointer bg-gradient-to-br ${card.color}`}
-            >
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-lg bg-white/60 flex items-center justify-center text-indigo-400">
-                  <card.icon size={20} />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-800">{card.title}</h3>
-              </div>
-              <p className="text-sm text-gray-500">{card.desc}</p>
-            </Link>
-          ))}
-        </div>
-      </div>
-
       <div className="mb-12">
         <h3 className="text-xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
-          <FaBolt className="text-indigo-400" size={18} /> 最新动态
+          <FaBolt className="text-indigo-400" size={18} /> GitHub 最新动态
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <a href="https://github.com/ButterJack07" target="_blank" className="glass-card rounded-xl p-5">
-            <div className="flex items-center gap-2 mb-3 text-gray-400 text-xs"><FaGithub /> GitHub</div>
-            <p className="text-sm text-gray-700">查看我的开源项目和代码贡献</p>
+        {eventsLoading ? (
+          <div className="space-y-4">
+            {[1,2,3,4,5].map((i) => (
+              <div key={i} className="glass-card rounded-xl p-4 animate-pulse">
+                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
+                <div className="h-3 bg-gray-100 rounded w-1/2" />
+              </div>
+            ))}
+          </div>
+        ) : events.length === 0 ? (
+          <div className="glass-card rounded-xl p-8 text-center">
+            <FaGithub className="mx-auto mb-3 text-gray-300" size={32} />
+            <p className="text-gray-500 text-sm">暂无动态</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {events.map((event) => {
+              const Icon = getEventIcon(event.type)
+              return (
+                <a
+                  key={event.id}
+                  href={`https://github.com/${event.repo.name}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="glass-card rounded-xl p-4 flex items-start gap-4 group"
+                >
+                  <div className="w-9 h-9 rounded-full bg-indigo-50 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Icon className="text-indigo-400" size={15} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-gray-700" dangerouslySetInnerHTML={{ __html: formatEventText(event) }} />
+                    <p className="text-xs text-gray-400 mt-1">{timeAgo(event.created_at)}</p>
+                  </div>
+                  <FaArrowUpRightFromSquare className="text-gray-200 group-hover:text-indigo-400 transition-colors flex-shrink-0 mt-1" size={12} />
+                </a>
+              )
+            })}
+          </div>
+        )}
+        <div className="mt-4 text-center">
+          <a
+            href="https://github.com/ButterJack07"
+            target="_blank"
+            className="inline-flex items-center gap-2 text-xs text-gray-500 hover:text-indigo-600 transition-colors"
+          >
+            <FaGithub size={14} /> 查看全部 GitHub 动态 →
           </a>
-          <a href="https://space.bilibili.com/1453945101" target="_blank" className="glass-card rounded-xl p-5">
-            <div className="flex items-center gap-2 mb-3 text-gray-400 text-xs">
-              <span className="text-pink-500"><FaMusic /></span> Bilibili
-            </div>
-            <p className="text-sm text-gray-700">技术分享、编程vlog和音乐作品</p>
-          </a>
-          <Link to="/library" className="glass-card rounded-xl p-5">
-            <div className="flex items-center gap-2 mb-3 text-gray-400 text-xs">
-              <FaBook className="text-emerald-400" /> 最新笔记
-            </div>
-            <p className="text-sm text-gray-700">浏览我的知识笔记库</p>
-          </Link>
         </div>
       </div>
 
@@ -193,7 +265,7 @@ export default function Home() {
               href={link.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="glass-card rounded-xl p-5 group relative"
+              className="glass-card rounded-xl p-5 group relative card-lift"
             >
               {isEditMode && (
                 <button

@@ -10,10 +10,13 @@
 body { font-family: 'Inter', system-ui, sans-serif; background: linear-gradient(135deg, #f8fafc, #f1f5f9, #e8f0fe); min-height: 100vh; color: #374151; }
 
 .glass { background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur)); border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); }
+.glass-strong { background: rgba(255,255,255,0.8); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 8px 32px rgba(0,0,0,0.06); }
 .glass-card { background: rgba(255,255,255,0.7); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 4px 24px rgba(0,0,0,0.04); transition: all 0.3s cubic-bezier(0.4,0,0.2,1); }
 .glass-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.08); border-color: rgba(255,255,255,0.6); }
 .glass-input { background: rgba(255,255,255,0.5); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.3); outline: none; }
 .glass-input:focus { background: rgba(255,255,255,0.7); border-color: rgba(99,102,241,0.3); box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
+
+.player-glass { background: rgba(255,255,255,0.65); backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.35); box-shadow: 0 8px 40px rgba(0,0,0,0.05); }
 
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 3px; }
@@ -21,10 +24,22 @@ body { font-family: 'Inter', system-ui, sans-serif; background: linear-gradient(
 @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
 @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes ripple { to { transform: scale(4); opacity: 0; } }
 
 .animate-fade-in { animation: fadeIn 0.5s ease forwards; }
 .animate-slide-in { animation: slideIn 0.4s ease forwards; }
 .animate-scale-in { animation: scaleIn 0.3s ease forwards; }
+.animate-slide-up { animation: slideUp 0.4s ease forwards; }
+
+.page-enter { animation: fadeIn 0.4s ease forwards; }
+
+.ripple-effect { position: relative; overflow: hidden; }
+.ripple-effect::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle, rgba(99,102,241,0.15) 10%, transparent 10%); background-position: center; background-repeat: no-repeat; background-size: 0%; transition: background-size 0s; }
+.ripple-effect:active::after { background-size: 400%; transition: background-size 0.5s; }
+
+.card-lift { transition: all 0.3s cubic-bezier(0.4,0,0.2,1); }
+.card-lift:hover { transform: translateY(-6px) scale(1.01); box-shadow: 0 16px 48px rgba(0,0,0,0.08); }
 
 .lyrics-container { mask-image: linear-gradient(transparent 0%, black 15%, black 85%, transparent 100%); }
 

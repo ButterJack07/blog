@@ -1,92 +1,48 @@
-import { useState, useRef, useEffect, useCallback } from 'react'
-import { FaPlay, FaPause, FaBackward, FaForward, FaVolumeLow, FaMusic, FaPlus } from 'react-icons/fa6'
-import { parseLRC, formatTime } from '../utils/lrcParser'
+import { useState, useRef, useEffect } from 'react'
+import { FaPlay, FaPause, FaBackward, FaForward, FaVolumeLow, FaMusic, FaPlus, FaXmark, FaUpload, FaCheck } from 'react-icons/fa6'
+import { formatTime } from '../utils/lrcParser'
+import { usePlayer } from '../contexts/PlayerContext'
 import { useEditStore } from '../stores/editStore'
-import type { MusicTrack, LyricLine } from '../types'
+import type { MusicTrack } from '../types'
 
 const demoTracks: MusicTrack[] = [
   { id: '1', title: '渺小', artist: '黄油夹克', genre: '流行', year: '2026', audioUrl: '/music/黄油夹克 - 渺小.mp3', lrcUrl: '/music/黄油夹克 - 渺小.lrc', description: '「渺小的我，在偌大的世界里寻找自己的声音」' },
 ]
 
+const GITHUB_API = 'https://api.github.com'
+const OWNER = 'ButterJack07'
+const REPO = 'blog'
+
 export default function Music() {
   const { isEditMode } = useEditStore()
-  const [tracks] = useState<MusicTrack[]>(demoTracks)
+  const player = usePlayer()
+  const [tracks, setTracks] = useState<MusicTrack[]>(demoTracks)
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [currentTime, setCurrentTime] = useState(0)
-  const [duration, setDuration] = useState(0)
-  const [volume, setVolume] = useState(0.7)
-  const [lyrics, setLyrics] = useState<LyricLine[]>([])
-  const [activeLyricIndex, setActiveLyricIndex] = useState(-1)
+  const [showUpload, setShowUpload] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const [uploadDone, setUploadDone] = useState(false)
+  const [uploadError, setUploadError] = useState('')
 
-  const audioRef = useRef<HTMLAudioElement>(null)
   const lyricsRef = useRef<HTMLUListElement>(null)
+
+  const [form, setForm] = useState({
+    title: '', artist: '黄油夹克', genre: '流行', year: String(new Date().getFullYear()),
+    description: '', audioFile: null as File | null, lrcFile: null as File | null, coverFile: null as File | null,
+  })
 
   const track = tracks[currentIndex]
 
-  // Load lyrics
+  // Sync current track with player
   useEffect(() => {
-    if (!track?.lrcUrl) return
-    fetch(track.lrcUrl)
-      .then((r) => r.text())
-      .then((text) => setLyrics(parseLRC(text)))
-      .catch(() => setLyrics([]))
-  }, [track])
-
-  // Audio events
-  useEffect(() => {
-    const audio = audioRef.current
-    if (!audio) return
-
-    const onTimeUpdate = () => {
-      setCurrentTime(audio.currentTime)
-      const idx = lyrics.findLastIndex((l) => audio.currentTime >= l.time)
-      setActiveLyricIndex(idx)
+    if (track && player.currentTrack?.id !== track.id) {
+      player.setQueue(tracks)
     }
-    const onLoadedMetadata = () => setDuration(audio.duration)
-    const onEnded = () => { setIsPlaying(false); setCurrentTime(0) }
-
-    audio.addEventListener('timeupdate', onTimeUpdate)
-    audio.addEventListener('loadedmetadata', onLoadedMetadata)
-    audio.addEventListener('ended', onEnded)
-    audio.volume = volume
-
-    return () => {
-      audio.removeEventListener('timeupdate', onTimeUpdate)
-      audio.removeEventListener('loadedmetadata', onLoadedMetadata)
-      audio.removeEventListener('ended', onEnded)
-    }
-  }, [lyrics, volume])
-
-  // Play/Pause
-  const togglePlay = useCallback(() => {
-    const audio = audioRef.current
-    if (!audio) return
-    if (isPlaying) { audio.pause() } else { audio.play() }
-    setIsPlaying(!isPlaying)
-  }, [isPlaying])
-
-  // Seek
-  const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect()
-    const pct = (e.clientX - rect.left) / rect.width
-    if (audioRef.current) {
-      audioRef.current.currentTime = pct * duration
-    }
-  }
-
-  // Volume
-  const handleVolume = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect()
-    const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width))
-    setVolume(pct)
-    if (audioRef.current) audioRef.current.volume = pct
-  }
+  }, [track, tracks, player])
 
   // Scroll lyrics
   useEffect(() => {
-    if (activeLyricIndex < 0 || !lyricsRef.current) return
-    const active = lyricsRef.current.children[activeLyricIndex] as HTMLElement
+    if (player.activeLyricIndex < 0 || !lyricsRef.current) return
+    const active = lyricsRef.current.children[player.activeLyricIndex] as HTMLElement
     if (active) {
       const container = active.parentElement?.parentElement
       if (container) {
@@ -94,110 +50,230 @@ export default function Music() {
         lyricsRef.current.style.transform = `translateY(-${offset}px)`
       }
     }
-  }, [activeLyricIndex])
+  }, [player.activeLyricIndex])
+
+  async function uploadFileToGitHub(path: string, file: File, token: string): Promise<void> {
+    const buffer = await file.arrayBuffer()
+    const bytes = new Uint8Array(buffer)
+    let binary = ''
+    for (const byte of bytes) binary += String.fromCharCode(byte)
+    const encoded = btoa(binary)
+    const res = await fetch(`${GITHUB_API}/repos/${OWNER}/${REPO}/contents/${path}`, {
+      method: 'PUT',
+      headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: `上传音乐: ${form.title}`, content: encoded }),
+    })
+    if (!res.ok) throw new Error(`Failed to upload ${path}`)
+  }
+
+  async function handleUpload() {
+    const token = localStorage.getItem('github_token')
+    if (!token) { setUploadError('请先登录'); return }
+    if (!form.title.trim() || !form.audioFile) { setUploadError('请填写标题并选择音频文件'); return }
+
+    setUploading(true)
+    setUploadError('')
+    const folder = form.title.trim().replace(/[/\\?%*:|"<>]/g, '_')
+    const ts = Date.now().toString()
+
+    try {
+      await uploadFileToGitHub(`music/${folder}/${form.title}.mp3`, form.audioFile, token)
+      if (form.lrcFile) {
+        await uploadFileToGitHub(`music/${folder}/${form.title}.lrc`, form.lrcFile, token)
+      }
+      let coverUrl: string | undefined
+      if (form.coverFile) {
+        const ext = form.coverFile.name.split('.').pop() || 'jpg'
+        await uploadFileToGitHub(`music/${folder}/cover.${ext}`, form.coverFile, token)
+        coverUrl = `/music/${folder}/cover.${ext}`
+      }
+      const info = {
+        id: ts, title: form.title.trim(), artist: form.artist, genre: form.genre,
+        year: form.year, description: form.description, coverUrl,
+        audioUrl: `/music/${folder}/${form.title}.mp3`,
+        lrcUrl: form.lrcFile ? `/music/${folder}/${form.title}.lrc` : undefined,
+      }
+      const infoJson = JSON.stringify(info, null, 2)
+      const encodedInfo = btoa(unescape(encodeURIComponent(infoJson)))
+      await fetch(`${GITHUB_API}/repos/${OWNER}/${REPO}/contents/music/${folder}/info.json`, {
+        method: 'PUT',
+        headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: `创建音乐信息: ${form.title}`, content: encodedInfo }),
+      })
+
+      const newTrack: MusicTrack = {
+        id: ts, title: form.title.trim(), artist: form.artist, genre: form.genre,
+        year: form.year, description: form.description, coverUrl,
+        audioUrl: `/music/${folder}/${form.title}.mp3`,
+        lrcUrl: form.lrcFile ? `/music/${folder}/${form.title}.lrc` : undefined,
+      }
+      setTracks((prev) => [...prev, newTrack])
+      setUploadDone(true)
+      setTimeout(() => { setShowUpload(false); setUploadDone(false) }, 1500)
+    } catch (err: unknown) {
+      setUploadError(err instanceof Error ? err.message : '上传失败')
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const playTrack = (index: number) => {
+    setCurrentIndex(index)
+    const t = tracks[index]
+    player.setQueue(tracks)
+    player.play(t)
+  }
 
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h2 className="text-3xl font-bold text-gray-800 mb-1">音乐创作</h2>
+          <h2 className="text-3xl font-bold text-gray-800 mb-1">原创音乐</h2>
           <p className="text-gray-500">那些代码写不出的情绪，都写在歌里了。</p>
         </div>
-        {isEditMode && (
-          <button className="glass-card px-4 py-2 rounded-lg text-sm text-indigo-600 flex items-center gap-2">
-            <FaPlus /> 新建乐曲
-          </button>
+        {isEditMode && !showUpload && (
+          <button onClick={() => { setShowUpload(true); setUploadDone(false); setUploadError('') }}
+            className="glass-card px-4 py-2 rounded-lg text-sm text-indigo-600 flex items-center gap-2 hover:bg-indigo-50"
+          ><FaPlus /> 新建乐曲</button>
         )}
       </div>
 
-      {/* Now Playing */}
+      {showUpload && (
+        <div className="glass-card rounded-2xl p-6 mb-8 animate-fade-in">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-gray-800">上传新乐曲</h3>
+            <button onClick={() => setShowUpload(false)} className="text-gray-400 hover:text-gray-600"><FaXmark /></button>
+          </div>
+          {uploadDone ? (
+            <div className="text-center py-8 text-emerald-500"><FaCheck className="mx-auto mb-2" size={32} /><p>上传成功！</p></div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <input placeholder="歌曲标题 *" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className="glass-input rounded-lg px-4 py-2.5 text-sm" />
+                <input placeholder="艺术家" value={form.artist} onChange={(e) => setForm({ ...form, artist: e.target.value })} className="glass-input rounded-lg px-4 py-2.5 text-sm" />
+                <select value={form.genre} onChange={(e) => setForm({ ...form, genre: e.target.value })} className="glass-input rounded-lg px-4 py-2.5 text-sm">
+                  {['流行', '民谣', '摇滚', '电子', '古典', '爵士', '说唱', 'R&B', '其他'].map((g) => <option key={g}>{g}</option>)}
+                </select>
+                <input placeholder="年份" value={form.year} onChange={(e) => setForm({ ...form, year: e.target.value })} className="glass-input rounded-lg px-4 py-2.5 text-sm" />
+                <div className="md:col-span-2">
+                  <input placeholder="描述（可选）" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="glass-input rounded-lg px-4 py-2.5 text-sm w-full" />
+                </div>
+                <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <label className="glass-input rounded-lg px-4 py-2.5 text-sm flex items-center gap-3 cursor-pointer hover:bg-white/40">
+                    <FaUpload className="text-indigo-400" size={14} />
+                    <span className="text-gray-500 truncate">{form.audioFile ? form.audioFile.name : '选择音频 *'}</span>
+                    <input type="file" accept=".mp3,.wav,.ogg,.flac" onChange={(e) => setForm({ ...form, audioFile: e.target.files?.[0] || null })} className="hidden" />
+                  </label>
+                  <label className="glass-input rounded-lg px-4 py-2.5 text-sm flex items-center gap-3 cursor-pointer hover:bg-white/40">
+                    <FaUpload className="text-indigo-400" size={14} />
+                    <span className="text-gray-500 truncate">{form.lrcFile ? form.lrcFile.name : '选择 LRC 歌词（可选）'}</span>
+                    <input type="file" accept=".lrc,.txt" onChange={(e) => setForm({ ...form, lrcFile: e.target.files?.[0] || null })} className="hidden" />
+                  </label>
+                  <label className="glass-input rounded-lg px-4 py-2.5 text-sm flex items-center gap-3 cursor-pointer hover:bg-white/40">
+                    <FaUpload className="text-indigo-400" size={14} />
+                    <span className="text-gray-500 truncate">{form.coverFile ? form.coverFile.name : '选择封面'}</span>
+                    <input type="file" accept=".jpg,.jpeg,.png,.webp" onChange={(e) => setForm({ ...form, coverFile: e.target.files?.[0] || null })} className="hidden" />
+                  </label>
+                </div>
+              </div>
+              {uploadError && <p className="text-red-500 text-xs mb-3">{uploadError}</p>}
+              <div className="flex gap-3">
+                <button onClick={handleUpload} disabled={uploading}
+                  className="px-6 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 disabled:opacity-50 transition-colors text-sm flex items-center gap-2"
+                >{uploading ? '上传中...' : <><FaUpload /> 上传到 GitHub</>}</button>
+                <button onClick={() => setShowUpload(false)} className="px-6 py-2 glass-card rounded-lg text-sm text-gray-600">取消</button>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
       <div className="player-glass rounded-2xl p-8 mb-8">
         <div className="flex flex-col md:flex-row gap-8">
-          {/* Player Controls */}
           <div className="flex-shrink-0 w-full md:w-72">
-            <div className="aspect-square rounded-xl bg-gradient-to-br from-rose-100 to-orange-50 mb-4 flex items-center justify-center glass">
-              <FaMusic className="text-white/50" size={64} />
+            <div className="aspect-square rounded-xl mb-4 overflow-hidden bg-gradient-to-br from-rose-100 to-orange-50 flex items-center justify-center glass">
+              {track?.coverUrl ? (
+                <img src={track.coverUrl} alt={track.title} className="w-full h-full object-cover" />
+              ) : (
+                <FaMusic className="text-white/50" size={64} />
+              )}
             </div>
             <div className="text-center mb-4">
-              <h3 className="text-xl font-semibold text-gray-800">{track?.title || '未选择'}</h3>
-              <p className="text-sm text-gray-500">{track?.artist} · {track?.genre} · {track?.year}</p>
+              <h3 className="text-xl font-semibold text-gray-800">{player.currentTrack?.title || track?.title || '未选择'}</h3>
+              <p className="text-sm text-gray-500">{player.currentTrack?.artist || track?.artist} · {player.currentTrack?.genre || track?.genre} · {player.currentTrack?.year || track?.year}</p>
             </div>
             <div className="flex items-center justify-center gap-6 mb-4">
-              <button onClick={() => setCurrentIndex((i) => (i - 1 + tracks.length) % tracks.length)} className="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:text-indigo-500 hover:bg-white/50 transition-all">
-                <FaBackward size={16} />
+              <button onClick={player.playPrev} className="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:text-indigo-500 hover:bg-white/50 transition-all"><FaBackward size={16} /></button>
+              <button onClick={() => {
+                if (player.currentTrack?.id === track?.id) {
+                  player.togglePlay()
+                } else {
+                  playTrack(currentIndex)
+                }
+              }} className="w-14 h-14 rounded-full bg-indigo-500 text-white flex items-center justify-center hover:bg-indigo-600 transition-all shadow-lg shadow-indigo-200">
+                {player.isPlaying && player.currentTrack?.id === track?.id ? <FaPause size={20} /> : <FaPlay size={20} className="ml-0.5" />}
               </button>
-              <button onClick={togglePlay} className="w-14 h-14 rounded-full bg-indigo-500 text-white flex items-center justify-center hover:bg-indigo-600 transition-all shadow-lg shadow-indigo-200">
-                {isPlaying ? <FaPause size={20} /> : <FaPlay size={20} className="ml-0.5" />}
-              </button>
-              <button onClick={() => setCurrentIndex((i) => (i + 1) % tracks.length)} className="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:text-indigo-500 hover:bg-white/50 transition-all">
-                <FaForward size={16} />
-              </button>
+              <button onClick={player.playNext} className="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:text-indigo-500 hover:bg-white/50 transition-all"><FaForward size={16} /></button>
             </div>
             <div className="mb-3">
-              <div className="h-1.5 bg-white/50 rounded-full cursor-pointer" onClick={handleSeek}>
-                <div className="h-full bg-gradient-to-r from-indigo-400 to-rose-400 rounded-full" style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }} />
+              <div className="h-1.5 bg-white/50 rounded-full cursor-pointer" onClick={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect()
+                const pct = (e.clientX - rect.left) / rect.width
+                player.seek(pct * player.duration)
+              }}>
+                <div className="h-full bg-gradient-to-r from-indigo-400 to-rose-400 rounded-full" style={{ width: `${player.duration ? (player.currentTime / player.duration) * 100 : 0}%` }} />
               </div>
               <div className="flex justify-between text-xs text-gray-400 mt-1">
-                <span>{formatTime(currentTime)}</span>
-                <span>{formatTime(duration)}</span>
+                <span>{formatTime(player.currentTime)}</span>
+                <span>{formatTime(player.duration)}</span>
               </div>
             </div>
             <div className="flex items-center gap-2 text-xs text-gray-400">
               <FaVolumeLow size={12} />
-              <div className="flex-1 h-1 bg-white/50 rounded-full cursor-pointer" onClick={handleVolume}>
-                <div className="h-full bg-indigo-400 rounded-full" style={{ width: `${volume * 100}%` }} />
+              <div className="flex-1 h-1 bg-white/50 rounded-full cursor-pointer" onClick={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect()
+                const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width))
+                player.setVolume(pct)
+              }}>
+                <div className="h-full bg-indigo-400 rounded-full" style={{ width: `${player.volume * 100}%` }} />
               </div>
-              <span>{Math.round(volume * 100)}%</span>
+              <span>{Math.round(player.volume * 100)}%</span>
             </div>
-            <audio ref={audioRef} src={track?.audioUrl} preload="metadata" />
           </div>
 
-          {/* Lyrics */}
           <div className="flex-1 relative overflow-hidden" style={{ height: 400 }}>
             <div className="lyrics-container h-full">
               <ul ref={lyricsRef} className="text-center transition-transform duration-500 ease-out" style={{ paddingTop: '160px' }}>
-                {lyrics.length === 0 ? (
+                {player.lyrics.length === 0 ? (
                   <>
                     <li className="py-3 text-gray-300">暂无歌词</li>
-                    <li className="py-3 text-gray-300 text-sm">可将同名 .lrc 文件放入 music 文件夹</li>
+                    <li className="py-3 text-gray-300 text-sm">上传时添加 .lrc 歌词文件即可显示</li>
                   </>
                 ) : (
-                  lyrics.map((line, i) => (
-                    <li
-                      key={i}
-                      className={`py-3 cursor-pointer transition-all duration-300 ${
-                        i === activeLyricIndex
-                          ? 'text-indigo-600 text-lg font-medium scale-105'
-                          : 'text-gray-400 hover:text-gray-600'
-                      }`}
-                      onClick={() => { if (audioRef.current) audioRef.current.currentTime = line.time }}
-                    >
-                      {line.text}
-                    </li>
+                  player.lyrics.map((line, i) => (
+                    <li key={i} className={`py-3 cursor-pointer transition-all duration-300 ${i === player.activeLyricIndex ? 'text-indigo-600 text-lg font-medium scale-105' : 'text-gray-400 hover:text-gray-600'}`}
+                      onClick={() => player.seek(line.time)}>{line.text}</li>
                   ))
                 )}
               </ul>
             </div>
           </div>
         </div>
-        {track?.description && (
-          <p className="text-sm text-gray-400 italic mt-6 text-center">「{track.description}」</p>
-        )}
+        {player.currentTrack?.description && <p className="text-sm text-gray-400 italic mt-6 text-center">「{player.currentTrack.description}」</p>}
       </div>
 
-      {/* Playlist */}
       <h3 className="text-lg font-semibold text-gray-800 mb-4">播放列表</h3>
       <div className="space-y-3">
         {tracks.map((t, i) => (
-          <div
-            key={t.id}
-            onClick={() => { setCurrentIndex(i); setIsPlaying(false) }}
-            className={`glass-card rounded-xl p-4 flex items-center gap-4 cursor-pointer ${
-              i === currentIndex ? 'ring-2 ring-indigo-300 bg-indigo-50/30' : ''
-            }`}
+          <div key={t.id} onClick={() => playTrack(i)}
+            className={`glass-card rounded-xl p-4 flex items-center gap-4 cursor-pointer card-lift ${i === currentIndex ? 'ring-2 ring-indigo-300 bg-indigo-50/30' : ''}`}
           >
-            <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-rose-100 to-orange-50 flex items-center justify-center flex-shrink-0">
-              <FaMusic className="text-rose-300" size={18} />
+            <div className="w-12 h-12 rounded-lg overflow-hidden bg-gradient-to-br from-rose-100 to-orange-50 flex items-center justify-center flex-shrink-0">
+              {t.coverUrl ? (
+                <img src={t.coverUrl} alt={t.title} className="w-full h-full object-cover" />
+              ) : (
+                <FaMusic className="text-rose-300" size={18} />
+              )}
             </div>
             <div className="flex-1">
               <h4 className="font-medium text-gray-800">{t.title}</h4>
