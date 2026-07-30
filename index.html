@@ -17,6 +17,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:linear-gradient(1
 .sidebar .edit-btn{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(99,102,241,0.2);background:transparent;color:#6b7280;font-size:0.8rem;cursor:pointer;transition:.2s;margin-bottom:8px}
 .sidebar .edit-btn:hover{background:rgba(99,102,241,0.05);color:#6366f1}
 .sidebar .edit-btn.active{background:#6366f1;color:#fff;border-color:#6366f1}
+.sidebar-spacer{height:220px}
 .sidebar .copyright{font-size:0.7rem;color:#d1d5db;text-align:center}
 .main{flex:1;padding:32px 48px 100px;max-width:1100px}
 
@@ -236,6 +237,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:linear-gradient(1
   .nav-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
   .bookshelf{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}
   .edit-fab{display:none}
+  .sidebar-spacer{height:260px}
   #editFabMobile{display:inline-flex}
  }
 @media(min-width:769px){.sidebar{position:fixed;width:220px}.main{padding-left:calc(220px + 48px)}}/* Visualization */
@@ -252,6 +254,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:linear-gradient(1
   <!-- Sidebar -->
   <aside class="sidebar">
     <button id="editFabMobile" class="edit-btn" style="position:absolute;top:8px;right:8px;width:32px;height:32px;padding:0;border-radius:50%;font-size:0.85rem;z-index:1;align-items:center;justify-content:center">🔧</button>
+    <div class="sidebar-spacer"></div>
     <nav id="nav">
       <a href="#" data-page="home" class="active">🏠 首页</a>
       <a href="#" data-page="music">🎵 原创音乐</a>
