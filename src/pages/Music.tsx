@@ -121,6 +121,7 @@ export default function Music() {
   const [uploading, setUploading] = useState(false)
   const [uploadDone, setUploadDone] = useState(false)
   const [uploadError, setUploadError] = useState('')
+  const [loadError, setLoadError] = useState('')
 
   const lyricsRef = useRef<HTMLUListElement>(null)
 
@@ -129,7 +130,10 @@ export default function Music() {
     loadTracksFromRepo(token).then((list) => {
       if (list.length > 0) setTracks(list)
       setLoading(false)
-    }).catch(() => setLoading(false))
+    }).catch((err) => {
+      setLoadError(String(err))
+      setLoading(false)
+    })
   }, [])
 
   const [form, setForm] = useState({
@@ -237,6 +241,13 @@ export default function Music() {
         <div className="flex flex-col items-center justify-center py-24 text-gray-400">
           <FaSpinner className="animate-spin mb-4" size={28} />
           <p className="text-sm">正在加载音乐列表...</p>
+        </div>
+      ) : loadError ? (
+        <div className="flex flex-col items-center justify-center py-24 text-gray-400">
+          <FaXmark className="mb-4 text-red-400" size={28} />
+          <p className="text-sm text-red-400 mb-2">加载失败</p>
+          <p className="text-xs text-gray-400 mb-4">{loadError}</p>
+          <button onClick={() => window.location.reload()} className="px-4 py-2 bg-indigo-500 text-white rounded-lg text-sm hover:bg-indigo-600 transition-colors">重试</button>
         </div>
       ) : (
       <>
