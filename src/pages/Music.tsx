@@ -8,7 +8,9 @@ import type { MusicTrack } from '../types'
 const GITHUB_API = 'https://api.github.com'
 const OWNER = 'ButterJack07'
 const REPO = 'blog'
-const BASE = import.meta.env.BASE_URL.replace(/\/$/, '')
+const BASE = import.meta.env.DEV ? '' : import.meta.env.BASE_URL.replace(/\/$/, '')
+const MUSIC_PATH = 'public/music'
+const CACHE_KEY = 'blog_music_tracks'
 
 interface GitHubContentItem {
   name: string
@@ -58,17 +60,22 @@ async function fetchInfo(path: string, token?: string): Promise<MusicTrack | nul
 }
 
 async function loadTracksFromRepo(token?: string): Promise<MusicTrack[]> {
-  const items = await fetchDir('music', token)
+  const cached = localStorage.getItem(CACHE_KEY)
+  if (cached) {
+    try { return JSON.parse(cached) } catch {}
+  }
+
+  const items = await fetchDir(MUSIC_PATH, token)
   const results: MusicTrack[] = []
 
   for (const item of items) {
     if (item.type === 'dir') {
-      const info = await fetchInfo(`music/${item.name}/info.json`, token)
+      const info = await fetchInfo(`${MUSIC_PATH}/${item.name}/info.json`, token)
       if (info) {
         results.push(info)
         continue
       }
-      const files = await fetchDir(`music/${item.name}`, token)
+      const files = await fetchDir(`${MUSIC_PATH}/${item.name}`, token)
       for (const f of files) {
         const partial = fileNameToTrack(f.name, item.name)
         if (partial) {
@@ -97,7 +104,11 @@ async function loadTracksFromRepo(token?: string): Promise<MusicTrack[]> {
     }
   }
 
-  return results
+  if (results.length > 0) {
+    localStorage.setItem(CACHE_KEY, JSON.stringify(results))
+  }
+
+return results
 }
 
 export default function Music() {
@@ -173,14 +184,14 @@ export default function Music() {
     const ts = Date.now().toString()
 
     try {
-      await uploadFileToGitHub(`music/${folder}/${form.title}.mp3`, form.audioFile, token)
+      await uploadFileToGitHub(`${MUSIC_PATH}/${folder}/${form.title}.mp3`, form.audioFile, token)
       if (form.lrcFile) {
-        await uploadFileToGitHub(`music/${folder}/${form.title}.lrc`, form.lrcFile, token)
+        await uploadFileToGitHub(`${MUSIC_PATH}/${folder}/${form.title}.lrc`, form.lrcFile, token)
       }
       let coverUrl: string | undefined
       if (form.coverFile) {
         const ext = form.coverFile.name.split('.').pop() || 'jpg'
-        await uploadFileToGitHub(`music/${folder}/cover.${ext}`, form.coverFile, token)
+        await uploadFileToGitHub(`${MUSIC_PATH}/${folder}/cover.${ext}`, form.coverFile, token)
         coverUrl = `/music/${folder}/cover.${ext}`
       }
       const info = {
@@ -191,7 +202,7 @@ export default function Music() {
       }
       const infoJson = JSON.stringify(info, null, 2)
       const encodedInfo = btoa(unescape(encodeURIComponent(infoJson)))
-      await fetch(`${GITHUB_API}/repos/${OWNER}/${REPO}/contents/music/${folder}/info.json`, {
+      await fetch(`${GITHUB_API}/repos/${OWNER}/${REPO}/contents/${MUSIC_PATH}/${folder}/info.json`, {
         method: 'PUT',
         headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: `创建音乐信息: ${form.title}`, content: encodedInfo }),
