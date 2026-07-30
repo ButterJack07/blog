@@ -26,7 +26,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:linear-gradient(1
 .sidebar .edit-btn.active{background:#6366f1;color:#fff;border-color:#6366f1}
 .sidebar .copyright{font-size:0.7rem;color:#d1d5db;text-align:center}
 .main{flex:1;padding:32px 48px 100px;max-width:1100px}
-@media(min-width:769px){.main{padding-left:260px}}
+
 /* Hero */
 .hero{min-height:50vh;display:flex;flex-direction:column;justify-content:center;margin-bottom:48px}
 .hero h2{font-size:2.5rem;font-weight:800;line-height:1.3;margin-bottom:16px;color:#1f2937}
@@ -201,7 +201,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:linear-gradient(1
 #editFabMobile{display:none}
 @media(max-width:768px){
   .menu-btn{display:flex}
-  .sidebar{transform:translateX(-100%);transition:transform .3s ease;width:260px}
+  .sidebar{position:fixed;transform:translateX(-100%);transition:transform .3s ease;width:260px}
   .sidebar.open{transform:translateX(0)}
   .main{padding:16px 16px 80px}
   .hero h2{font-size:1.8rem}
@@ -218,7 +218,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:linear-gradient(1
   .edit-fab{display:none}
   #editFabMobile{display:inline-flex}
  }
-/* Visualization */
+@media(min-width:769px){.sidebar{position:fixed;width:220px}.main{padding-left:calc(220px + 48px)}}/* Visualization */
 .viz-canvas{border-radius:6px;flex-shrink:0}
 .viz-canvas.music{display:block;margin:8px auto 0;width:100%;max-width:260px;height:60px;border-radius:8px}
 </style>
@@ -230,7 +230,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:linear-gradient(1
   <button id="editFab" class="edit-fab" title="编辑模式">🔧</button>
   <div id="sidebarOverlay" style="display:none;position:fixed;inset:0;z-index:39;background:rgba(0,0,0,0.2)"></div>
   <!-- Sidebar -->
-  <aside class="sidebar" style="position:relative">
+  <aside class="sidebar">
     <button id="editFabMobile" class="edit-btn" style="position:absolute;top:8px;right:8px;width:32px;height:32px;padding:0;border-radius:50%;font-size:0.85rem;border:1px solid rgba(99,102,241,0.15);z-index:1;align-items:center;justify-content:center">🔧</button>
     <div class="user">
       <div class="avatar">B</div>
