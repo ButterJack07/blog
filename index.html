@@ -319,7 +319,6 @@ body{font-family:system-ui,-apple-system,sans-serif;background:linear-gradient(1
             <div class="t" style="color:#ec4899">📺 Bilibili <span id="biliLoading" style="color:#d1d5db;font-weight:400">加载中...</span></div>
             <div id="biliVideos"></div>
           </div>
-          </a>
         </div>
       </div>
     </div>
@@ -513,16 +512,34 @@ async function fetchLatest(){
   }catch{}
   // Bilibili latest 2 videos
   try{
-    const proxy='https://api.allorigins.win/raw?url='
-    const url='https://api.bilibili.com/x/space/arc/search?mid=1453945101&ps=2&pn=1'
-    const r=await fetch(proxy+encodeURIComponent(url),{signal:AbortSignal.timeout(5000)})
-    if(r.ok){
-      const data=await r.json()
-      if(data.code===0&&data.data?.list?.vlist?.length){
-        const videos=data.data.list.vlist.slice(0,2)
+    const biliEndpoints=[
+      'https://api.bilibili.com/x/space/arc/search?mid=1453945101&ps=2&pn=1',
+    ]
+    const proxies=['https://api.allorigins.win/raw?url=','https://corsproxy.io/?url=']
+    let data
+    // try direct first
+    for(const ep of biliEndpoints){
+      try{const r=await fetch(ep,{signal:AbortSignal.timeout(3000)});if(r.ok){data=await r.json();if(data?.code===0)break}}catch{}
+    }
+    // try proxies
+    if(!data||data.code!==0){
+      for(const p of proxies){
+        for(const ep of biliEndpoints){
+          try{
+            const r=await fetch(p+encodeURIComponent(ep),{signal:AbortSignal.timeout(4000)})
+            if(r.ok){data=await r.json();if(data?.code===0)break}
+          }catch{}
+        }
+        if(data?.code===0)break
+      }
+    }
+    if(data?.code===0){
+      const vlist=data.data?.list?.vlist||data.data?.list?.vnlist||[]
+      if(vlist.length){
+        const videos=vlist.slice(0,2)
         const biliVideos=document.getElementById('biliVideos')
         const biliLoading=document.getElementById('biliLoading')
-        if(biliLoading)biliLoading.style.display='none'
+        if(biliLoading)biliLoading.textContent=''
         if(biliVideos){
           biliVideos.innerHTML=videos.map(v=>`
             <a class="bili-vid" href="https://www.bilibili.com/video/${v.bvid}" target="_blank">
@@ -533,7 +550,17 @@ async function fetchLatest(){
         }
       }
     }
-  }catch{}
+    // fallback: hide loading text if still visible
+    const bl=document.getElementById('biliLoading')
+    if(bl)bl.textContent=''
+    const bv=document.getElementById('biliVideos')
+    if(bv&&!bv.children.length)bv.innerHTML='<a href="https://space.bilibili.com/1453945101" target="_blank" style="color:#9ca3af;font-size:0.8rem">→ 访问空间</a>'
+  }catch{
+    const bl=document.getElementById('biliLoading')
+    if(bl)bl.textContent=''
+    const bv=document.getElementById('biliVideos')
+    if(bv&&!bv.children.length)bv.innerHTML='<a href="https://space.bilibili.com/1453945101" target="_blank" style="color:#9ca3af;font-size:0.8rem">→ 访问空间</a>'
+  }
 }
 
 function renderHome(){
