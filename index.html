@@ -329,7 +329,6 @@ body{font-family:system-ui,-apple-system,sans-serif;background:linear-gradient(1
       <div style="margin-bottom:16px;text-align:right">
         <button class="ab" id="addLinkBtn" style="display:none">+ 添加链接</button>
       </div>
-      <div class="categories" id="categories"></div>
       <div class="nav-grid" id="navGrid"></div>
     </div>
 
@@ -380,13 +379,7 @@ const defaultLinks = [
 const STORAGE_LINKS = 'blog_links'
 
 const defaultNotebooks = [
-  {id:'n1',title:'计算机组成原理',desc:'核心知识点整理',color:'linear-gradient(135deg,#dbeafe,#eef2ff)',chapters:[
-    {id:'c1',title:'第一章：概述',content:'# 计算机系统概述\n\n计算机系统由硬件和软件两部分组成。'}
-  ]},
-  {id:'n2',title:'算法笔记',desc:'常见算法题解',color:'linear-gradient(135deg,#d1fae5,#ecfdf5)',chapters:[
-    {id:'c3',title:'动态规划',content:'# 动态规划\n\n## 背包问题'}
-  ]},
-  {id:'n3',title:'大模型部署踩坑',desc:'昇腾910B部署记录',color:'linear-gradient(135deg,#f3e8ff,#fdf4ff)',chapters:[]},
+  {id:'n1',title:'我的笔记',desc:'',color:'linear-gradient(135deg,#dbeafe,#eef2ff)',chapters:[]},
 ]
 function loadNotebooks(){
   try{const s=localStorage.getItem('blog_nb');if(s)return JSON.parse(s)}catch{}
@@ -402,7 +395,6 @@ let currentTrackIdx = 0
 let lyrics = []
 let activeLyricIdx = -1
 let notebookStack = [] // ['shelf', notebookId, chapterId]
-let catFilter = '全部'
 let isEditMode = false
 let musicView = 'player'
 let audioCtx, analyser, sourceNode
@@ -558,19 +550,6 @@ async function fetchLatest(){
 }
 
 function renderHome(){
-  const cats=[...new Set(links.map(l=>l.cat))]
-  const catBar=document.getElementById('categories')
-  catBar.innerHTML='<button class="active" data-cat="全部">全部</button>'+
-    cats.map(c=>'<button data-cat="'+c+'">'+c+'</button>').join('')
-  catBar.querySelectorAll('button').forEach(b=>{
-    b.addEventListener('click',()=>{
-      catBar.querySelectorAll('button').forEach(x=>x.classList.remove('active'))
-      b.classList.add('active')
-      catFilter=b.dataset.cat
-      renderNavGrid()
-    })
-  })
-  renderNavGrid()
   updateEditUI()
   fetchLatest()
 }
@@ -591,25 +570,12 @@ function updateEditUI(){
 
 // ====== NAVIGATION PAGE ======
 function renderNav(){
-  const cats=[...new Set(links.map(l=>l.cat))]
-  const catBar=document.getElementById('categories')
-  catBar.innerHTML='<button class="active" data-cat="全部">全部</button>'+
-    cats.map(c=>'<button data-cat="'+c+'">'+c+'</button>').join('')
-  catBar.querySelectorAll('button').forEach(b=>{
-    b.addEventListener('click',()=>{
-      catBar.querySelectorAll('button').forEach(x=>x.classList.remove('active'))
-      b.classList.add('active')
-      catFilter=b.dataset.cat
-      renderNavGrid()
-    })
-  })
   renderNavGrid()
 }
 
 function renderNavGrid(){
   const grid=document.getElementById('navGrid')
-  const filtered=catFilter==='全部'?links:links.filter(l=>l.cat===catFilter)
-  grid.innerHTML=filtered.map(l=>`<div class="card" draggable="${isEditMode}" data-id="${l.id}">
+  grid.innerHTML=links.map(l=>`<div class="card" draggable="${isEditMode}" data-id="${l.id}">
     <span class="dh">⠿</span>
     <button class="db" data-id="${l.id}" title="删除">✕</button>
     <a href="${l.url}" target="_blank" style="text-decoration:none;color:inherit">
