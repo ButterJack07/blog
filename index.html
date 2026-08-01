@@ -850,10 +850,11 @@ async function ghUpload(path,file,msg,token){
   let binary=''
   for(const b of bytes)binary+=String.fromCharCode(b)
   const content=btoa(binary)
-  const r=await fetch(`https://api.github.com/repos/ButterJack07/blog/contents/${path}`,{
+  const body=new Blob([JSON.stringify({message:msg,content})],{type:'application/json; charset=UTF-8'})
+  const r=await fetch(`https://api.github.com/repos/ButterJack07/blog/contents/${encodeURI(path)}`,{
     method:'PUT',
-    headers:{Authorization:`token ${token}`, 'Content-Type':'application/json'},
-    body:JSON.stringify({message:msg,content})
+    headers:{Authorization:`token ${token}`},
+    body
   })
   if(!r.ok){
     const e=await r.json().catch(()=>({}))
