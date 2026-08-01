@@ -661,7 +661,7 @@ async function initMusic(){
   if(tracks.length===0){
     // fallback: scan flat mp3 files via GitHub API
     try{
-      const r=await fetch('https://api.github.com/repos/ButterJack07/blog/contents/public/music')
+      const r=await fetch('https://api.github.com/repos/ButterJack07/blog/contents/music')
       if(r.ok){
         const items=await r.json();
         for(const item of items){
@@ -703,7 +703,7 @@ function renderMusic(){
     ${musicView==='player'?`
     <div class="music-layout">
       <div class="music-cover">
-        <div class="art" id="coverArt">${t&&t.coverUrl?`<img src="${t.coverUrl}">`:'🎵'}</div>
+        <div class="art" id="coverArt">${t&&t.coverUrl?`<img src="${assetUrl(t.coverUrl)}">`:'🎵'}</div>
         <div class="music-info"><h3 id="musicTitle">${t?t.title:'未选择'}</h3><p id="musicMeta">${t?[t.artist,t.genre,t.year].filter(Boolean).join(' · '):''}</p></div>
         <div class="controls">
           <button id="ctrlPrev">⏮</button>
@@ -875,7 +875,7 @@ function renderPlaylist(){
   if(!el)return
   el.innerHTML=tracks.map((t,i)=>`
     <div class="playlist-item card ${i===currentTrackIdx?'active':''}" data-idx="${i}">
-      <div class="thumb">${t.coverUrl?`<img src="${t.coverUrl}">`:'🎵'}</div>
+      <div class="thumb">${t.coverUrl?`<img src="${assetUrl(t.coverUrl)}">`:'🎵'}</div>
       <div class="info"><h4>${t.title}</h4><p>${t.artist}${t.genre?' · '+t.genre:''}</p></div>
       <span class="year">${t.year||''}</span>
     </div>
@@ -888,7 +888,8 @@ function renderPlaylist(){
   })
 }
 
-const baseUrl = location.pathname.replace(/\/[^/]*$/, '')
+const baseUrl = location.pathname.replace(/\/[^/]*\.html?$/, '').replace(/\/+$/, '')
+function assetUrl(p){ if(!p)return ''; return /^https?:/.test(p)?p:baseUrl+p }
 const audio=document.getElementById('audioPlayer')
 function isPlaying(){return !audio.paused}
 
@@ -1019,7 +1020,7 @@ async function loadLyrics(track){
     return
   }
   try{
-    const res=await fetch(track.lrcUrl)
+    const res=await fetch(assetUrl(track.lrcUrl))
     if(!res.ok){container.innerHTML='<p style="color:#d1d5db">暂无歌词</p>';return}
     const text=await res.text()
     // try standard LRC format
