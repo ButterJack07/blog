@@ -903,9 +903,11 @@ function playTrack(idx){
   if (!vizInitialized) initVisualizer()
   if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume()
   audio.play()
-  loadLyrics(t)
+  lyrics=[]
+  activeLyricIdx=-1
   if(musicView!=='player'){musicView='player';renderMusic()}
   else updateMusicUI()
+  loadLyrics(t)
   renderPlaylist()
   showBottomPlayer()
   updateMusicMeta()
@@ -1047,7 +1049,6 @@ async function loadLyrics(track){
         })
       })
     } else {
-      container.innerHTML='<p style="color:#d1d5db">暂无歌词</p>'
       container.innerHTML='<p style="color:#d1d5db">暂无歌词</p>'
     }
   }catch{
